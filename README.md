@@ -11,7 +11,7 @@
 ```
 skills/
 ├── orchestration/   # 多 Agent 编排、并行调度、Agent 架构
-├── engineering/     # 软件工程方法论（架构/后端/前端/数据库/部署/流程）
+├── engineering/     # 软件工程方法论（架构设计/代码设计/代码审查/后端/前端/数据/工程流程）
 ├── testing/         # 测试全家桶（E2E/API/性能/安全/单元/可访问性/移动/LLM）
 ├── marketing/       # 营销与增长（copywriting/seo/cro/launch）
 └── research/        # 深度研究（deep-research 中英双语）
@@ -53,6 +53,18 @@ INSTALL_DIR=/path/to/skills ./install.sh
 | 前端 | frontend-a11y / frontend-design-direction / make-interfaces-feel-better / liquid-glass-design / ui-demo / ui-to-vue / react-patterns / react-performance / react-testing / vue-patterns / vite-patterns | affaan-m/ECC |
 | 部署 | docker-patterns / deployment-patterns / kubernetes-patterns / site-launch-checklist / canary-watch / production-audit / gateguard / security-scan / snyk-agent-scan-compliance | affaan-m/ECC + samber/cc-skills |
 | 工程流程 | plan-orchestrate / orch-add-feature / orch-build-mvp / orch-change-feature / orch-fix-defect / orch-pipeline / orch-refine-code / delivery-gate / browser-qa / ai-regression-testing / conventional-git / skill-progressive-disclosure-design / chrome-extension | affaan-m/ECC + samber/cc-skills |
+
+### engineering（1380）— 架构设计 / 代码设计 / 代码审查（2026-08-16 扩充）
+
+第三轮扩充聚焦**代码设计、架构设计、代码审查**三方面，来源：
+
+| 来源 | 数量 | 覆盖 |
+|------|------|------|
+| [wshobson/agents](https://github.com/wshobson/agents)（39k★） | 174 | 架构（architecture-patterns / microservices-patterns / cqrs-implementation / event-store-design / saga-orchestration）、代码质量（python-anti-patterns / python-design-patterns / error-handling-patterns / memory-safety-patterns）、API 设计（api-design-principles / openapi-spec-generation）、审查（multi-reviewer-patterns / review-agent-setup）、前端设计（design-system-patterns / interaction-design / visual-design-foundations） |
+| [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)（24k★） | 319 | 工程团队（engineering / engineering-team 目录：code-review / architecture / tdd / api-design）、质量保障（ra-qm-team）、产品工程（product-team / productivity）等 |
+| [sickn33/agentic-awesome-skills](https://github.com/sickn33/agentic-awesome-skills)（45k★） | 594 | **架构**：ddd-strategic-design / ddd-tactical-patterns / domain-driven-design / event-sourcing-architect / c4-architecture / monorepo-architect / software-architecture / architect-review / cloud-architect / kubernetes-architect / hybrid-cloud-architect；**审查**：code-review-checklist / code-review-ai-ai-review / comprehensive-review / git-pr-review / codex-review / review-swarm / differential-review / production-code-audit / codebase-audit-pre-push / styleseed-design-review；**代码设计**：clean-code / clean-code-guard / code-refactoring-* / codebase-cleanup-* / unslop / vibe-code-auditor / fp-*（函数式设计）/ design-it（48 种 UI 风格）/ super-code（16 语言编码规范） |
+| [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★） | 1 | 生产级代码审查：20 种语言参考 + 架构审查指南 + 安全审查指南 + 性能审查指南 + 跨领域模式（async/N+1/SQLi/XSS） |
+| [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review) | 1 | 综合 PR/MR 审查：17 个静态分析脚本（eslint/ruff/phpstan/semgrep/checkov/trufflehog 等）+ 17 语言 profile |
 
 ### marketing（21）— 营销与增长
 
@@ -104,6 +116,11 @@ The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录�
 - [VoltAgent/awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)（30k★）
 - [Weizhena/Deep-Research-skills](https://github.com/Weizhena/Deep-Research-skills)（1.9k★）
 - [samber/cc-skills](https://github.com/samber/cc-skills)
+- [wshobson/agents](https://github.com/wshobson/agents)（39k★）
+- [sickn33/agentic-awesome-skills](https://github.com/sickn33/agentic-awesome-skills)（45k★）
+- [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)（24k★）
+- [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★）
+- [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review)
 - [am-will/swarms](https://github.com/am-will/swarms)
 - [shinpr/sub-agents-skills](https://github.com/shinpr/sub-agents-skills)
 - [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)

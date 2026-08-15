@@ -1,0 +1,68 @@
+---
+name: backend-engineering
+description: Design and implement backend services and APIs — REST, gRPC, GraphQL
+  endpoint patterns, service architecture (clean/hexagonal/layered), database access
+  patterns, integration and middleware design, error handling, and service-level
+  testing. Language and framework agnostic. Do not use for frontend, data engineering,
+  or platform infrastructure provisioning.
+license: MIT
+metadata:
+  tags: backend, api, services, server, database, integration, middleware, query-optimization,
+    testing
+  source_repo: https://github.com/magnus919/hermes-profiles
+---
+
+# Backend Engineering Methodology
+
+Backend engineering is the craft of building the server-side systems that power applications — APIs, services, data access, integrations, and the runtime behavior that makes the architecture real. This methodology covers the implementation patterns between architecture design (software-architecture-analysis) and quality validation (qa-methodology).
+
+## The Backend Engineer's Domain
+
+| You own | You don't own |
+|---------|--------------|
+| API implementation — REST/gRPC/GraphQL endpoints, request validation, response formatting, error handling, middleware chains | API contract and service boundary design — that's the api-design-and-evolution |
+| Service logic — business rules, workflow orchestration, state management, background job processing | Deployment pipeline and infrastructure — that's the platform-engineer |
+| Database access patterns — query design, connection management, transaction boundaries, N+1 detection, pagination | Schema design and migrations — that's the data-architect / data-engineer |
+| Integration code — third-party API clients, webhook handlers, message queue consumers/producers | Code review and quality gates — that's the qa-methodology |
+| Observability instrumentation at the service level — structured logging, metrics, tracing hooks | Observability infrastructure — that's the SRE / platform-engineer |
+| Service-level tests — unit tests for business logic, integration tests for API contracts | Test strategy and automation — that's the QA-engineer |
+
+## Reference Files
+
+| Reference | When to load |
+|-----------|-------------|
+| `references/api-patterns.md` | Designing or implementing API endpoints — resource modeling, versioning, pagination, error response formats, request validation |
+| `references/service-patterns.md` | Structuring service logic — clean/hexagonal/layered architecture, dependency injection, middleware composition, request lifecycle, background jobs |
+| `references/database-testing.md` | Database access patterns (connection pooling, query optimization, N+1 detection, pagination strategies, transaction boundaries, read/write splitting, replication lag) and service-level testing (unit testing business logic, integration testing API contracts with test containers/WireMock, contract testing with Pact, test fixtures, CI integration) |
+| `references/integration-patterns.md` | Integrating with external systems — retry with backoff, circuit breakers, idempotency keys, webhook verification, message queue consumers |
+| `references/error-handling.md` | Handling errors systematically — classification (client vs server), structured responses, exception handling patterns, observability correlation |
+
+## Templates
+
+| Template | When to Use |
+|-----------|-------------|
+| `templates/service-design-record.md` | Designing or restructuring a service — structure, API surface, data access, error handling, and testing plan in one reviewable record |
+| `templates/error-handling-taxonomy.md` | Defining or auditing a service's error contract — classification, response format, retry/idempotency policy, and error-path tests |
+
+## Scripts
+
+| Script | When to Use |
+|-----------|-------------|
+| `scripts/n1-query-spotter.py` | Scanning Python source for potential N+1 query patterns (query-like calls inside loops); `--json` for CI-friendly output, exit 1 on findings |
+
+## Related Skills
+
+- [postgres](../postgres/SKILL.md) — diagnosing the PostgreSQL side of a database problem: configuration review, index and query-plan issues, vacuum/bloat, backups/PITR, replication and failover. Application-level data access patterns stay here; engine-level operations route there.
+- [supabase](../supabase/SKILL.md) — building on Supabase: migrations, RLS, Auth, Storage, and Edge Functions. To measure an agent's Supabase task competence, use its [agent evals harness reference](../supabase/references/agent-evals.md).
+
+## Core Principles
+
+**The interface is the contract** — API boundaries are service-level contracts. Every endpoint signature, request schema, response format, and error code is a promise to consumers. Breaking changes are coordination problems, not version bumps.
+
+**Business logic is the center of gravity** — Keep business rules isolated from framework concerns, transport protocols, and infrastructure details. A well-structured service can survive changes to its HTTP library, database driver, and deployment platform.
+
+**Handle errors where they make sense** — Catch errors at the boundary where you have enough context to handle them meaningfully. Catch too early and you lose context. Catch too late and you can't recover.
+
+**Design for failure, not just success** — Every external call can fail. Every database connection can drop. Every message can be duplicated. Idempotency, retry, and graceful degradation are not optimizations — they're requirements.
+
+**Test at the right level** — Business logic gets unit tests. API contracts get integration tests. Service boundaries get contract tests. Each level catches a different class of failure.
