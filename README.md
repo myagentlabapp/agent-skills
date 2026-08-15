@@ -12,6 +12,7 @@
 skills/
 ├── orchestration/   # 多 Agent 编排、并行调度、Agent 架构
 ├── engineering/     # 软件工程方法论（架构/后端/前端/数据库/部署/流程）
+├── testing/         # 测试全家桶（E2E/API/性能/安全/单元/可访问性/移动/LLM）
 ├── marketing/       # 营销与增长（copywriting/seo/cro/launch）
 └── research/        # 深度研究（deep-research 中英双语）
 ```
@@ -67,6 +68,25 @@ INSTALL_DIR=/path/to/skills ./install.sh
 | deep-research-research-*（research-deep/report/add-fields/add-items） | Weizhena/Deep-Research-skills（英文） |
 | deep-research-zh-*（research/report/deep/add-fields/add-items） | Weizhena/Deep-Research-skills（中文） |
 
+### testing（406）— 测试全家桶（qaskills.sh 精选）
+
+The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录，按测试维度覆盖：
+
+| 维度 | 代表 skill |
+|------|-----------|
+| E2E/浏览器（36） | playwright-e2e / cypress-e2e / selenium-advance-pom / puppeteer-testing / webdriverio-e2e / visual-regression / percy-visual-regression |
+| API/契约（29） | api-fuzzing / api-security-testing / api-contract-validator / contract-testing-pact / graphql-testing / grpc-testing / postman-api / openapi-test-generation |
+| 性能/负载（19） | k6-performance / jmeter-load / locust-load-testing / artillery-load / gatling-performance / lighthouse-performance / stress-testing-patterns |
+| 安全（24） | owasp-security / zap-security-scanner / xss-testing-patterns / sql-injection-testing / jwt-security-testing / oauth-security-testing / afl-fuzzing / burpsuite-security |
+| 单元/方法（20） | jest-unit / vitest / pytest-best-practices / mutation-testing / property-based-testing / snapshot-testing / test-driven-development |
+| 可访问性（8） | accessibility-a11y-enhanced / wcag-accessibility-testing / axe-accessibility / pa11y-accessibility-ci |
+| 移动（11） | appium-mobile / detox-mobile / espresso-android / xcuitest-ios / maestro-mobile / mobile-performance-testing |
+| LLM/AI（17） | llm-output-testing / llm-security-testing / prompt-testing / ragas-rag-evaluation / deepeval-llm-evaluation / vibe-testing / ai-agent-eval |
+| 数据/DB（16） | database-migration-testing / redis-testing / mongodb-testing / kafka-event-driven-testing / test-data-generation / faker-test-data |
+| CI/流程（25） | cicd-pipeline / quality-gates-ci / test-plan-generation / test-strategy-design / regression-test-selection / smoke-test-suite / flaky-test-doctor |
+
+其余 ~200 个覆盖：混沌工程（chaos-engineering-advanced）、契约优先（contract-first-testing）、测试数据（test-data-anonymization）、报告（allure-report-generator）、测试管理（testrail-test-management）、以及各语言框架（go-testing/rust-testing/spring-boot-testing/django-testing/fastapi-testing 等）。
+
 ## 许可与致谢
 
 本仓库是**第三方开源 skill 的精选合集**，每个 skill 保留其原始仓库的 license。来源：
@@ -80,6 +100,7 @@ INSTALL_DIR=/path/to/skills ./install.sh
 - [mvanhorn/last30days-skill](https://github.com/mvanhorn/last30days-skill)（58k★）
 - [kepano/obsidian-skills](https://github.com/kepano/obsidian-skills)（46k★）
 - [coreyhaines31/marketingskills](https://github.com/coreyhaines31/marketingskills)（44k★）
+- [PramodDutta/qaskills](https://github.com/PramodDutta/qaskills)（QA 测试 skill 目录，qaskills.sh）
 - [VoltAgent/awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)（30k★）
 - [Weizhena/Deep-Research-skills](https://github.com/Weizhena/Deep-Research-skills)（1.9k★）
 - [samber/cc-skills](https://github.com/samber/cc-skills)
