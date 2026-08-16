@@ -81,6 +81,19 @@ INSTALL_DIR=/path/to/skills ./install.sh
 | [android/skills](https://github.com/android/skills)（Google 官方） | 22 | Android 官方（android-cli / navigation-3 / Jetpack Compose 迁移 / play-policy-insights / play-billing / r8-analyzer / perfetto） |
 | [secondsky/claude-skills](https://github.com/secondsky/claude-skills) | 20 | mobile 全家桶（app-store-deployment / mobile-app-testing / mobile-app-debugging / payment-gateway-integration / PWA / 推送 / i18n） |
 
+### engineering（1514）— 嵌入式开发（2026-08-16 第五轮补充）
+
+嵌入式固件开发专项，覆盖单片机（STM32/ESP32/Arduino/树莓派）、RTOS（FreeRTOS/Zephyr）、通信协议（MQTT/CoAP/BLE/CAN/USB/IP）、裸机 C 规范：
+
+| 来源 | 数量 | 覆盖 |
+|------|------|------|
+| [travisjneuman/.claude](https://github.com/travisjneuman/.claude) | 4 | embedded-iot（ESP32/STM32/Arduino/树莓派/FreeRTOS/Zephyr/MQTT/BLE）、edge-computing、electron-desktop、tauri-desktop |
+| [Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills)（11k★） | 1 | embedded-systems（STM32/ESP32/bare-metal/中断处理/DMA/功耗优化） |
+| [beriberikix/zephyr-agent-skills](https://github.com/beriberikix/zephyr-agent-skills)（Zephyr 官方社区） | 22 | Zephyr RTOS 全家桶（kernel-basics / kernel-services / devicetree / build-system / board-bringup / connectivity-ble / connectivity-usb-can / iot-protocols / storage / testing-debugging / power-performance / multicore / native-sim 等） |
+| [rovinax/embedded-skills](https://github.com/rovinax/embedded-skills) | 6 | 嵌入式 C 规范（cstyle）/ RTOS 设计 / ISR 设计 / 驱动设计 / 架构 / 文档 |
+
+> 附带补齐桌面端缺口：electron-desktop / tauri-desktop（上一轮缺口 #4 桌面应用）。
+
 ### marketing（21）— 营销与增长
 
 | Skill | 来源 |
@@ -141,6 +154,10 @@ The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录�
 - [laolaoshiren/claude-code-skills-zh](https://github.com/laolaoshiren/claude-code-skills-zh)（764★）
 - [JustinPerea/app-store-review-skill](https://github.com/JustinPerea/app-store-review-skill)
 - [secondsky/claude-skills](https://github.com/secondsky/claude-skills)（206★）
+- [travisjneuman/.claude](https://github.com/travisjneuman/.claude)（127 skills）
+- [Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills)（11k★）
+- [beriberikix/zephyr-agent-skills](https://github.com/beriberikix/zephyr-agent-skills)（Zephyr RTOS）
+- [rovinax/embedded-skills](https://github.com/rovinax/embedded-skills)
 - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)（24k★）
 - [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★）
 - [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review)
