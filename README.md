@@ -66,6 +66,21 @@ INSTALL_DIR=/path/to/skills ./install.sh
 | [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★） | 1 | 生产级代码审查：20 种语言参考 + 架构审查指南 + 安全审查指南 + 性能审查指南 + 跨领域模式（async/N+1/SQLi/XSS） |
 | [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review) | 1 | 综合 PR/MR 审查：17 个静态分析脚本（eslint/ruff/phpstan/semgrep/checkov/trufflehog 等）+ 17 语言 profile |
 
+### engineering（1483）— 微信生态 / 国内支付 / 移动上架（2026-08-16 第四轮）
+
+第四轮扩充聚焦**微信生态、国内支付、移动端上架**三方面，来源：
+
+| 来源 | 数量 | 覆盖 |
+|------|------|------|
+| [wechatpay-apiv3/wechatpay-skills](https://github.com/wechatpay-apiv3/wechatpay-skills)（官方） | 1 | 微信支付全产品接入（JSAPI/APP/H5/Native/小程序支付/分账/转账/委托代扣/服务商） |
+| [alipay/ai](https://github.com/alipay/ai)（官方） | 8 | 支付宝支付全家桶（payment-integration / pay-for-service / pay-for-402 / aipay / 委托代扣 / 钱包认证 / 企业场景 / 支付反馈） |
+| [joneqian/claude-skills-suite](https://github.com/joneqian/claude-skills-suite) | 16 | 微信小程序原生开发（WXML/WXSS/WXS）+ tdesign-miniprogram（TDesign 60+ 组件） |
+| [tencentcloudbase/cloudbase-skills](https://github.com/tencentcloudbase/cloudbase-skills)（腾讯云官方） | 29 | 云开发全栈（miniprogram-development / auth-wechat-miniprogram / cloudbase-wechat-integration / 云函数 / 数据库 / CloudRun） |
+| [laolaoshiren/claude-code-skills-zh](https://github.com/laolaoshiren/claude-code-skills-zh) | 20 | 中文开发者工具链（i18n-helper / zh-docgen / zh-readme / zh-code-reviewer / api-tester / db-migrator 等） |
+| [JustinPerea/app-store-review-skill](https://github.com/JustinPerea/app-store-review-skill) | 1 | iOS App Store 提审预检（隐私字符串/图标/entitlement/账号删除/Sign in with Apple） |
+| [android/skills](https://github.com/android/skills)（Google 官方） | 22 | Android 官方（android-cli / navigation-3 / Jetpack Compose 迁移 / play-policy-insights / play-billing / r8-analyzer / perfetto） |
+| [secondsky/claude-skills](https://github.com/secondsky/claude-skills) | 20 | mobile 全家桶（app-store-deployment / mobile-app-testing / mobile-app-debugging / payment-gateway-integration / PWA / 推送 / i18n） |
+
 ### marketing（21）— 营销与增长
 
 | Skill | 来源 |
@@ -118,6 +133,14 @@ The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录�
 - [samber/cc-skills](https://github.com/samber/cc-skills)
 - [wshobson/agents](https://github.com/wshobson/agents)（39k★）
 - [sickn33/agentic-awesome-skills](https://github.com/sickn33/agentic-awesome-skills)（45k★）
+- [wechatpay-apiv3/wechatpay-skills](https://github.com/wechatpay-apiv3/wechatpay-skills)（微信支付官方）
+- [alipay/ai](https://github.com/alipay/ai)（支付宝官方）
+- [tencentcloudbase/cloudbase-skills](https://github.com/tencentcloudbase/cloudbase-skills)（腾讯云官方）
+- [android/skills](https://github.com/android/skills)（Google 官方，6.8k★）
+- [joneqian/claude-skills-suite](https://github.com/joneqian/claude-skills-suite)
+- [laolaoshiren/claude-code-skills-zh](https://github.com/laolaoshiren/claude-code-skills-zh)（764★）
+- [JustinPerea/app-store-review-skill](https://github.com/JustinPerea/app-store-review-skill)
+- [secondsky/claude-skills](https://github.com/secondsky/claude-skills)（206★）
 - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)（24k★）
 - [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★）
 - [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review)
