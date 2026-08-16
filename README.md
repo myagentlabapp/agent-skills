@@ -14,7 +14,22 @@ skills/
 ├── engineering/     # 软件工程方法论（架构设计/代码设计/代码审查/后端/前端/数据/工程流程）
 ├── testing/         # 测试全家桶（E2E/API/性能/安全/单元/可访问性/移动/LLM）
 ├── marketing/       # 营销与增长（copywriting/seo/cro/launch）
-└── research/        # 深度研究（deep-research 中英双语）
+├── research/        # 深度研究（deep-research 中英双语）
+├── productivity/    # 生产力工具（文档/表格/演示/笔记/项目管理）
+├── mlops/           # 机器学习与模型运维
+├── creative/        # 创意设计（图表/ASCII/信息图/设计系统）
+├── documentation/   # 文档规范（PRD/架构蓝图/Diátaxis/ADR）
+├── devops/          # DevOps 工程
+├── github/          # GitHub 工作流
+├── operations/      # 通用运维方法论
+├── media/           # 媒体处理
+├── note-taking/     # 笔记管理
+├── apple/           # Apple 生态
+├── data-science/    # 数据科学
+├── email/           # 邮件
+├── smart-home/      # 智能家居
+├── social-media/    # 社交媒体
+└── ...              # 其他通用分类
 ```
 
 ## 快速安装
