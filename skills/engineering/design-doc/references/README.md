@@ -1,0 +1,27 @@
+# 专项规范（references）
+
+与 [`SKILL.md`](../SKILL.md) 配合使用；细则冲突时以本目录文件为准。
+
+## 真值源
+
+| 文件 | 内容 |
+|------|------|
+| [coding-system.md](coding-system.md) | 文档编码、细项编码、默认/扩展前缀与引用规则 |
+| [layer-system.md](layer-system.md) | L0–L6 层级定义、目录结构与命名规则 |
+| [status-definitions.md](status-definitions.md) | 标准状态值与流转 |
+| [deprecation-guide.md](deprecation-guide.md) | 细项废弃流程、标记与引用追溯 |
+| [deprecated-docs-guide.md](deprecated-docs-guide.md) | 文档废弃操作流程、目录管理和定期清理 |
+| [glossary-conventions.md](glossary-conventions.md) | 术语与概念定义（项目级、文档级、编码级） |
+| [review-guidelines.md](review-guidelines.md) | 审核流程、检查项与一致性校验 |
+
+## 操作与辅助
+
+| 文件 | 内容 |
+|------|------|
+| [project-agents-guide.md](project-agents-guide.md) | 为宿主项目生成 AGENTS.md 的建议写法 |
+
+## 非模板资源
+
+| 资源 | 说明 |
+|------|------|
+| [flowchart-guide.md](../assets/guides/flowchart-guide.md) | 流程图：箭头 / 表格 / Mermaid 选用规则 |
