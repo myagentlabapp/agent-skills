@@ -1,0 +1,118 @@
+# 官方教程（learn-agent-skills）
+
+> 来源: https://github.com/debs-obrien/learn-agent-skills
+
+# Anatomy of a Skill
+
+Now that you know what skills are, let's look inside one. We'll use a skill called **README Wizard** as our example. It transforms any repo's README into a polished, professional one.
+
+**Success check:** You can explain what goes in `SKILL.md`, `scripts/`, `references/`, `assets/`, and `evals/`.
+
+## The Folder Structure
+
+![Anatomy of a Skill](assets/anatomy-of-a-skill.png)
+
+Only `SKILL.md` is required. Everything else is optional. You add it when you need it.
+
+---
+
+### Hands-On: Verify the Structure
+
+Before we dive into the details, let's get familiar with a real skill folder. This repo includes a finished README Wizard skill you can examine right now.
+
+Treat it as a reference implementation. In Tutorial 3, you'll build your own copy in a separate practice project.
+
+**Copy this prompt and paste it into your agent:**
+
+```
+Show me the contents of the .agents/skills/readme-wizard/ folder and list every file and subfolder. Describe what's in each one in 1-2 sentences.
+```
+
+The agent will display the structure and explain what each piece does. This connects the diagram above to actual files you'll build in later tutorials.
+
+---
+
+## SKILL.md: The Brain
+
+This is the only required file. It has two parts:
+
+**1. YAML frontmatter**: the metadata at the top between `---` markers:
+
+```yaml
+---
+name: readme-wizard
+description: Generate a polished, professional README.md for any project...
+---
+```
+
+The `name` identifies the skill. The `description` is the most important part. It's what the agent reads to decide whether to use this skill. Make it specific about what the skill does AND when to use it.
+
+A good description is "pushy". It tells the agent to use the skill even when the user doesn't explicitly ask for it:
+
+> *"Generate a polished, professional README.md for any project. Use this skill whenever the user mentions README, wants to improve their repo's first impression, asks about badges, or wants their GitHub repo to look more professional, even if they don't explicitly say 'README'."*
+
+**2. Markdown body**: the instructions the agent follows:
+
+This is where you tell the agent what to do, step by step. For our README Wizard, the body walks through: scanning the project, reading best practices, picking badges, filling in a template, and personalizing the output.
+
+The body should be under 500 lines. If you need more detail, put it in reference files.
+
+## Scripts
+
+Scripts handle deterministic, repeatable tasks that the agent would otherwise reinvent every time. For our README Wizard:
+
+ - **`scan_project.sh`**. Scans a project directory and outputs JSON with the project name, description, license, git remote, social links, directory structure, package manager, and CI configuration. Your first version can stay local-file only. The reference implementation in this repo also shows how you can add richer metadata lookups later with GitHub API and homepage enrichment.
+
+The key insight: **scripts run without being loaded into the agent's context**. The agent executes them and reads the output. This saves tokens. A 200-line bash script doesn't eat into the context window.
+
+## References
+
+References are documents the agent reads when it needs guidance. For our README Wizard:
+
+- **`readme-best-practices.md`**. Covers what makes a great README, recommended section order, writing tone, badge best practices, and common mistakes.
+
+The agent only reads this when it's about to write a README. It doesn't load it upfront. This is progressive disclosure. Keep the main instructions lean, and put the deep knowledge in reference files.
+
+For large reference files (over 300 lines), include a table of contents at the top so the agent can find what it needs quickly.
+
+## Assets
+
+Assets are files that get plugged into the output. For our README Wizard:
+
+- **`badges.json`**. A catalog of badge templates with `{{PLACEHOLDER}}` markers. Includes status badges (license, version, CI), social badges (YouTube with subscriber count, Discord with member count, Twitter, LinkedIn), and extras (star history, contributor avatars).
+
+- **`readme-template.md`**. The README structure with `{{PLACEHOLDER}}` markers for all dynamic content. The agent fills in the placeholders with real project data.
+
+- **`diagrams.md`**. Mermaid diagram templates for common project types (content sites, APIs, CLI tools, monorepos).
+
+Assets are different from references. References teach the agent, assets are used in the output.
+
+## Evals
+
+Evals are test cases that define what "good" looks like. For our README Wizard:
+
+- **`evals.json`**. Contains test prompts and assertions. Each test case has a realistic prompt (like "generate a README for this project") and a list of things the output should contain (badges, quick start section, contributing section, etc.).
+
+Evals are optional but valuable. They're like unit tests for your skill — a checklist defining what the output should contain. Each test case has assertions the agent can review the output against to catch issues like placeholder text left in, fabricated badges, or missing sections.
+
+## Before vs After
+
+Here's what the README Wizard actually produces. The difference between a README without the skill and with it:
+
+![Before vs After](assets/before-vs-after.png)
+
+### Test Your Understanding
+
+Copy this prompt to verify you've absorbed the key concepts:
+
+```
+Explain what each folder in a skill is used for: SKILL.md, scripts/, references/, assets/, and evals/. Give a one-sentence description for each.
+```
+
+Now you know what a skill looks like and what each piece does. In Tutorial 3, you'll build this exact structure from scratch and experience firsthand why each folder exists.
+
+## Next Steps
+
+You've seen the anatomy of a skill. Now let's build one from scratch.
+
+**Next:** [Tutorial 3: Build the README Wizard — Phase 1 →](03_build-readme-wizard-skill-part_1.md)
