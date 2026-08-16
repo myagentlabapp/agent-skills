@@ -130,6 +130,16 @@ INSTALL_DIR=/path/to/skills ./install.sh
 | [ragrahari/claude-skills](https://github.com/ragrahari/claude-skills) | 1 | **system-design-doc**：需求→结构化系统设计文档（HLD），interview/production 双深度 |
 | [jgolbez/design-decision-extraction](https://github.com/jgolbez/design-decision-extraction) | 1 | extract-decisions：从设计文档提取结构化设计决策（备选/权衡/证据） |
 
+### engineering（1842）— 写 skill 的 skill（2026-08-16 第八轮补充）
+
+补上「如何写 skill」的官方权威来源：
+
+| 来源 | 数量 | 覆盖 |
+|------|------|------|
+| [Ronifue/skill-authoring](https://github.com/Ronifue/skill-authoring)（49★） | 1 | **skill-authoring**：设计/编写/审查 skill 全流程——触发描述、路由、质量清单、反模式、防漂移、安装前审计 |
+| [agentskills/agentskills](https://github.com/agentskills/agentskills)（24.3k★，官方规范） | 打包 | references/official-spec：Agent Skills 开放标准规范全文 |
+| [debs-obrien/learn-agent-skills](https://github.com/debs-obrien/learn-agent-skills)（45★，官方教程） | 打包 | references/official-spec/tutorial：官方入门 7 篇（建首个 skill→深入→实战→分享） |
+
 ### marketing（21）— 营销与增长
 
 | Skill | 来源 |
@@ -212,6 +222,9 @@ The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录�
 - [caiaffa/claude-code-ultimate-engineering-system](https://github.com/caiaffa/claude-code-ultimate-engineering-system)
 - [ragrahari/claude-skills](https://github.com/ragrahari/claude-skills)
 - [jgolbez/design-decision-extraction](https://github.com/jgolbez/design-decision-extraction)
+- [Ronifue/skill-authoring](https://github.com/Ronifue/skill-authoring)
+- [agentskills/agentskills](https://github.com/agentskills/agentskills)（24.3k★ 官方规范）
+- [debs-obrien/learn-agent-skills](https://github.com/debs-obrien/learn-agent-skills)
 - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)（24k★）
 - [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★）
 - [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review)
