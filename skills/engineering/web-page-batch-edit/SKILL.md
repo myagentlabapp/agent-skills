@@ -104,7 +104,7 @@ sftp.put(local, remote)                # ← 才传新内容
 - **CSS 缓存**：getComputedStyle 旧值 + fetch 新值 = 浏览器/代理缓存旧 CSS。HTML link 无版本号是根因
 - **`window.innerWidth` 含滚动条**（15px）——测居中偏移必须用 `document.documentElement.clientWidth`，否则得到 -7 假偏差（详见 `headless-browser-automation`）
 - **用户浏览器缓存**：即使线上已修好，用户看到的可能还是旧版——告知硬刷新 `Ctrl+Shift+R` 或无痕窗口
-- **`docker exec conhub-mcp python3` 传脚本**：sftp 写容器卷路径会 EACCES，用「写 111 /tmp → `docker cp` 进容器 → docker exec 执行」
+- **`docker exec <mcp-server> python3` 传脚本**：sftp 写容器卷路径会 EACCES，用「写 111 /tmp → `docker cp` 进容器 → docker exec 执行」
 
 ## Verification
 
