@@ -1,0 +1,142 @@
+# 主方案聚合质量门禁
+
+本文件只定义主方案聚合层的质量门禁：场景决策文件、SDK 来源、跨域工程一致性和共享消息入口。多 Agent 启动和分工见 [多 Agent 代码生成编排规则](../multi-agent-codegen.md)；字段、接口、枚举、SDK Model 和本域工程质量由对应子 Skill 负责。
+
+## 子域边界
+
+1. 员企、费控、账单子域规则以对应子 Skill 为准；地铁发票启用后，发票域规则以 `alipay-enterprise-invoice` 为准。
+2. 主方案只检查子域结果是否能在同一工程内聚合、编译并满足已确认的单场景约束。
+3. 子域 validator 失败时，必须回到对应子 Agent 或子 Skill 阶段修正，不得在主方案层删除接口、删除业务分支或改为 stub 来绕过。
+4. 已有项目叠加接入必须交付业务衔接点说明；只新增孤立支付宝模块、通知只打日志或账单只写幂等记录，不能作为默认完成状态。
+5. 已有项目叠加接入必须在用户确认计划后写入 `.alipay-skill/integration-contract.json`；契约结构见 [已有项目衔接契约](../integration-contract.md)。新工程不强制生成契约。
+6. 火车票三方免密代扣是可选扩展域；未启用时不得纳入默认子域检查。启用时以 `alipay-third-party-withholding` 子 Skill 为字段、接口、MAPI 签名和本域质量事实来源。
+7. 地铁场景必须记录 `invoiceIntegration.enabled=true/false`。未启用时不运行发票 validator；启用或工程出现发票实现痕迹时，必须运行发票 validator 并把发票域纳入已有项目契约。
+
+## 地铁发票选接门禁
+
+1. `METRO/METRO` 的 `scenario.json` 必须存在 `invoiceIntegration.enabled` 布尔值，不接受缺失、字符串或 `NEEDS_USER_CONFIRM`。
+2. 启用时 `modules.invoice` 至少包含 `enterprise-title`、`open-rule`、`invoice-message`、`single-invoice-query`；该四模块对应的 8 个基础接口/通知必须完整交付。
+3. 未启用时 `modules.invoice` 必须省略或为空，生成工程不得出现企业抬头、开票规则、企业发票通知/查询实现痕迹。
+4. 启用时必须执行 `alipay-enterprise-invoice/scripts/validate_codegen.js <生成项目目录>`；缺少发票 Skill、validator 执行失败或退出码非 `0` 时不得宣布生成完成。
+5. 发票通知沿用主方案已确定的 HTTP(S) 或 WebSocket 通道。WebSocket 时仅生成可被共享 `MsgHandler` 路由的发票 handler；HTTP(S) 时沿用已有统一应用网关和验签入口。
+6. 非地铁场景必须省略 `invoiceIntegration`；不展示发票选项，也不用 `enabled=false` 污染其他场景决策。
+
+## SDK 来源门禁
+
+1. Java 代码生成前必须完成 SDK 预检：确认 SDK 版本来源、Maven 依赖可解析，并在生成后验证实际使用的 SDK 类存在。预检未通过不得生成 Java 接口调用代码。
+2. 非 Java 技术栈必须选择对应语言 SDK 或 HTTP(S) 接入方式，不运行 Java SDK/Maven 硬门禁，但仍必须做对应语言的 SDK 导入或 HTTP(S) 签名、模块加载、构建和测试校验。
+3. Java/Maven 新项目和已有项目叠加接入都必须先运行以下单条命令读取 Central Portal 页面，再从页面中的 `pkg:maven/com.alipay.sdk/alipay-sdk-java@<version>` 或 Maven dependency snippet 提取 `com.alipay.sdk:alipay-sdk-java` 当前版本：
+
+```bash
+curl -sL "https://central.sonatype.com/artifact/com.alipay.sdk/alipay-sdk-java"
+```
+
+4. Java/Maven 接入目标版本一律使用 Central Portal 当前版本。已有项目如果已有 `alipay-sdk-java` 依赖，增量改造计划中必须列出升级该依赖和同步 README/说明文档；用户确认计划后执行升级。不得沿用旧 POM 版本，也不得凭记忆使用旧默认版本继续生成。
+5. 如果 auto mode、沙箱、网络策略或命令审批禁止执行上述 `curl`，不得改用记忆中的版本，也不得使用 `search.maven.org/solrsearch`、`repo1.maven.org/**/maven-metadata.xml`、`repo.maven.apache.org/**/maven-metadata.xml`、`latestVersion` 或其他 Maven 索引结果兜底；必须停止 Java/Maven 代码生成，请求用户授权执行该 `curl`，或要求用户明确提供 Central Portal 当前版本。
+6. 提取出的 `alipay-sdk-java` 版本必须匹配 `^[0-9]+\.[0-9]+\.[0-9]+\.ALL$`。不符合该格式时，视为抓到了页面资源版本或其他无关版本，必须重新从 `pkg:maven/...@<version>` 或 dependency snippet 提取。
+7. Java/Maven 场景必须解析 SDK jar，并用 `jar tf` 验证生成代码实际导入的 `com.alipay.api.request/response/domain/msg` 类真实存在。
+8. 找不到 SDK getter/setter 或源码包缺失时，使用 `jar tf`、`javap -classpath <sdk.jar> <class>` 或 IDE 反编译确认真实类和方法；不得用反射、`getMethod/invoke`、`BeanUtils`、Map 包装等方式绕过官方 SDK Request/Model/Response 的编译期类型。
+9. SDK 类或对应语言能力不存在时，只能调整官方 SDK 版本、继续查文档、改用文档支持的接入方式或报告不支持；不得猜类名、不得生成本地 SDK stub。
+10. 不得把 `search.maven.org`、`maven-metadata.xml`、`latestVersion` 或任何非 Central Portal 来源得到的版本描述为“Central Portal 当前版本”。只要 SDK 预检记录、报告或最终回复出现这些来源作为版本依据，Java/Maven 代码生成必须判定为未完成并重新执行 Central Portal 查询。
+11. Java/Maven SDK 预检必须在最终回复中给出执行结果：Central Portal 查询命令、从 `pkg:maven/...@<version>` 或 Maven dependency snippet 截取的版本证据，以及依赖/关键类验证结果。未完成 SDK 预检时不得进入接口调用代码生成。
+
+已有项目中，Java/Maven 只把现有 POM/Gradle 作为盘点输入，不作为最终 SDK 版本来源；最终必须升级到 Central Portal 当前版本并验证真实类/方法可用。Node.js 以现有 `package.json` / lockfile 为 SDK 事实来源，除非用户要求升级，不得主动替换版本。
+
+## MAPI 免密代扣接入门禁
+
+本节只在火车票三方免密代扣启用时生效。
+
+1. 用户未明确提出免密代扣、三方代扣、代扣协议、自动扣款、先签约后扣款、火车票/12306 出票扣款、票代代扣等诉求时，不得启用本域，不得要求 MAPI 预检。
+2. 启用时必须存在 `scenario.json.thirdPartyWithholding.enabled=true`，且 `gateway=MAPI`、`scenario=TRAIN_TICKET`。
+3. 本域不适用企业码 OpenAPI SDK Request/Model/Response 预检；必须做 MAPI 接入预检：网关、`partner`、`sign_type`、签名工具、HTTP 客户端、字符集、已有 MAPI 能力和项目状态。
+4. 启用时必须执行 `alipay-third-party-withholding/scripts/validate_codegen.js <生成项目目录>`；缺少该 Skill、validator 执行失败或退出码非 `0` 时，不得宣布生成完成。
+5. 只要生成工程中出现 `dut.agent.third`、`dut.agent.query.third`、`alipay.dut.customer.agreement`、`submit_param`、`DUT_AGENT_THIRD_P`、`mr_dut_third` 等免密代扣实现痕迹，即使 `scenario.json` 未启用，也必须执行本域 validator 或删除/修正误生成代码；不得让未声明的 MAPI 代码绕过校验。
+6. 启用后必须覆盖完整签约 + 代扣链路五个接口，不提供“只签约/只代扣”通过路径。
+
+## 场景文件门禁
+
+1. 代码生成必须存在 `.alipay-skill/scenario.json`，且 `status` 为 `CONFIRMED`。
+2. 每个字段只描述一个场景，不允许数组化的多场景输入。
+3. `expenseType` 与 `expenseTypeSubCategory` 必须是费控枚举文档中的合法组合，因公场景必须来自制度接口文档，并写入 `scenario.json` 的 `sceneType` 字段；用户或上下文未明确时，费用类型为 `METRO` 的地铁场景和票务类场景应默认为“差旅”（接口值 `TRAVEL`），其他场景应默认为“通用”（接口值 `DEFAULT`）。明确选择其它合法因公场景时可覆盖默认值。
+4. `requiredRuleFactors` 必须覆盖费控约束文档要求，`ruleFactorCapabilities` 必须为每个必用因子声明 `SCENARIO_FIXED` 或 `ENTERPRISE_INPUT`。顶层不得使用缺少归属信息的 `ruleFactorValues`，也不得把运行期校验数据声明为配置来源。
+5. `SCENARIO_FIXED` 必须携带当前场景文档明确给出的精确 `value` 和 `EXACT_MATCH`，允许生成具名场景常量；`ENTERPRISE_INPUT` 必须具备企业输入、校验和租户持久化。两类都必须正确映射到 `rule_value`。
+6. 内部费控时，`scenario.json` 必须确认制度额度/发放来源，且不得残留待确认值。具体来源类型、限额因子、手工发放接口和制度实现合法性由费控子 Skill 校验，主聚合层只检查该决策已形成并参与聚合。
+7. 用户未明确提出因公优先需求时，`businessPriority.enabled` 必须为 `false`，不得额外生成因公优先规则。
+8. 用户明确启用因公优先时，`businessPriority` 必须记录服务商支持的商户限制因子，`ruleFactorCapabilities` 必须包含这些因子和 `ALARM_CLOCK_TIME`；企业运行期输入及组合合法性由费控子 Skill 文档和本域 validator 校验。
+9. 账单识别字段必须来自账单文档；不适用的字段可省略，不得用猜测值补齐。
+
+已有项目如果接入前全量构建或测试已失败，必须先记录失败 baseline。接入后优先运行本域 validator、主聚合 validator 和可执行的 scoped build/test；不能把既有无关失败当成本次生成完成的阻塞，也不能忽略本次改动引入的新失败。
+
+## 主聚合校验
+
+1. 生成环境必须运行主校验脚本：`node alipay-enterprise-scenario-integration/scripts/validate_codegen.js <生成项目目录>`。已有项目必须加 `ALIPAY_PROJECT_MODE=existing`，用于强制检查 `.alipay-skill/integration-contract.json`。这是唯一能作为主方案完成依据的校验命令。
+2. Java/Maven 项目中，主校验会依次调用员企、费控、账单三个基础子 Skill 的本域 validator；发票启用或出现实现痕迹时追加发票 validator。
+3. 主校验必须读取 `.alipay-skill/scenario.json`，检查其状态、费用类型/子类合法性、因公场景、必用规则因子及配置来源。场景固定值必须与当前约束文档和制度实现一致；企业输入必须验证租户配置链路。运行期订单或支付数据由制度匹配逻辑或外部费控 SPI 校验，不进入本配置契约。制度额度/发放来源的具体实现细节由费控子 validator 负责。
+4. Node.js 项目中，主校验会调用三个基础子 Skill 及已启用发票/扩展子 Skill 的本域 validator，并执行 Node.js 聚合结果一致性检查。
+5. Python、Go、.NET 项目中，主脚本会运行可用的跨语言子域 validator，并执行所选场景、费控制度字段结构、外部 SPI 占位实现和可用构建检查。
+6. 火车票三方免密代扣启用或工程出现免密代扣实现痕迹时，主校验还会调用 `alipay-third-party-withholding` 本域 validator；普通企业码场景不调用该 validator。
+7. 自定义脚本、临时小脚本、手写 checklist、`CODEGEN_REPORT.md`、`GENERATION_REPORT.md` 或模型口头总结均不能替代主校验脚本。可以额外辅助检查，但不得作为完成依据。
+8. 不得在生成工程里创建同名或相似的 `scripts/*validate*.js` 来冒充 Skill validator；如果确需项目自测脚本，命名和说明必须明确为业务辅助测试，并且最终完成仍以 Skill 主校验脚本为准。
+9. Node 校验脚本属于 Skill 生成质量门禁，不作为接入方工程依赖。
+10. 主校验会区分三态：`0` 表示通过，`1` 表示生成代码不符合门禁，`2` 表示门禁自身或子 validator 执行不可信。出现 `1` 或 `2` 时不得宣布生成完成，需先修复代码、门禁或做人工复核。
+
+## Java/Maven 聚合结果一致性
+
+本节只检查多域代码汇合后的工程结果；各子域接口字段、SDK Model 和本域行为仍由对应子 Skill 门禁负责。
+
+1. Central Portal 当前版本是 `alipay-sdk-java` 目标版本事实来源；POM/Gradle 必须升级到该版本。
+2. README 或说明文档如写出 `alipay-sdk-java` 版本，必须与 POM/Gradle 保持一致；不得为了匹配 README 反向降级依赖。
+3. 生成后必须通过 Maven 编译。编译失败时，必须保留官方 SDK 代码并基于依赖、类型或文档修正。
+4. 主校验会用本地 `alipay-sdk-java` jar 反查所有 `com.alipay.api.request/response/domain/msg` 导入类真实存在；不存在时必须调整官方 SDK 版本、读取文档或报告不支持。
+5. 主校验会检查 WebSocket 业务载荷没有进入 HTTP 通知信封/二次验签链路，并检查正式 Repository/Store 不使用进程内状态。进程内状态、demo 业务 Port、示例回调只能在显式 `demo` / `test` profile 生效；不得挂在 `default` profile，生产默认启动必须使用真实实现或 fail-closed。
+6. 核心 Handler、Router、Controller、Service、AutoConfiguration、启动监听器必须默认可装配；demo/test profile 只能用于示例存储、回调、适配器或配置。
+7. Service、Handler、Controller、AutoConfiguration 等核心组件不得直接依赖 demo/test 具体实现；可替换扩展点必须通过接口、Port 或 Store 注入。Spring fail-closed 默认实现必须保持普通类，由独立 `@Configuration` 的 `@Bean` 方法装配，并在工厂方法上使用 `@ConditionalOnMissingBean(<Port>.class)`；不得把条件注解直接贴到普通扫描的 `@Component/@Repository` 实现类上。互斥 profile 仅用于确实互斥的实现。
+8. Spring 注入接口必须在默认配置下存在可用实现；仅有未激活 profile 实现属于运行时装配失败。初始化逻辑不得直接调用同类 `@Bean` 方法绕过 `@ConditionalOnBean` 或 profile 条件。
+9. fail-closed 实现不得只放在 `demo` profile；`application-<profile>.yml` / `application-<profile>.properties` 中不得设置 `spring.profiles.active`。
+10. Java 工程必须存在可执行测试并实际运行；通知链路需要行为测试。Spring Boot 新工程的上下文测试必须加载真实 `@SpringBootApplication`，不得用只扫描公共配置/消息包的嵌套测试启动类代替，并须注入至少一个已选业务域通知 Handler，或断言共享路由的业务 handler/route 集合非空。零测试、只启动裁剪上下文或路由数为零不得判为通过。
+
+## Node.js 聚合结果一致性
+
+1. 子域字段、接口、通知、SDK 调用和本域 Node.js 门禁由对应子 Skill 负责；主方案不重复展开。
+2. 主校验会读取实际安装的 `alipay-sdk`，确认生成工程使用的官方 SDK 导出形态可加载；SDK 不存在或导出不匹配时必须修复依赖或生成代码。
+3. 主校验会对生成工程的 `.js` / `.cjs` / `.mjs` 执行 `node --check`，并加载不会启动服务监听的 `src` / `lib` / `app` 模块。
+4. 费控模式、制度完整性和额度来源由费控子 Skill 的 Node.js 门禁校验；主聚合层不重复写死内部/外部模式值。
+5. 如果 `package.json` 存在 `test` 脚本，主校验只在聚合层运行一次 `npm test`；失败时不得宣布生成完成。
+6. 示例内存状态、demo 业务端口和示例回调不得作为默认生产导出；默认导出必须是真实实现、明确的 fail-closed，或要求接入方显式配置。
+
+## Python/Go/.NET 聚合结果一致性
+
+1. Python、Go、.NET 等手拼 HTTP(S) 请求体或使用非 Java SDK 的代码，字段名和嵌套路径必须完全来自接口文档；不得按业务语义生成近义字段。
+2. 主校验会调用员企、费控、账单跨语言门禁，拦截员企猜字段、账单费用子类错写、费控制度结构错位、固定 SPI 成功返回、空幂等查询和未实现占位。
+3. 运行时存在时，主校验会执行 Python 语法检查、`go test ./...` 或 `dotnet build`；运行时缺失时必须在交付说明中明确该构建检查不可用。
+4. demo/test 示例实现必须通过文件路径、配置或启动参数显式隔离；默认运行路径不得使用进程内状态或仅日志业务实现。
+
+## 共享消息入口
+
+Java WebSocket 消息接入的分工和禁止项见 [多 Agent 代码生成编排规则](../multi-agent-codegen.md)。主聚合门禁只检查最终工程是否满足以下结果：
+
+1. 同一个 Java 工程、同一个 `appId` 下只能有一个官方 `AlipayMsgClient` 持有者，且只能有一个 `setMessageHandler` 和一个 `connect` 入口。
+2. 共享入口必须在 `connect()` 前调用 `setConnector(...)` 和 `setSecurityConfig(signType, privateKey, alipayPublicKey)`；`setSecurityConfig` 第一个参数是签名类型（通常 `RSA2`），不得传 `appId`。
+3. `MsgHandler.onMessage` 的三个参数语义为 `msgApi, msgId, bizContent`；业务 handler 只能解析第三个参数 `bizContent`，不得把第二个参数 `msgId` 当业务 JSON 传入路由。
+4. 主方案聚合多个子域时，必须生成一个共享 `MsgHandler.onMessage` 路由器，按 `msgApi` / `msg_method` 分发到员企、账单、费控以及已启用的发票处理方法。
+5. 子域代码只能提供业务处理器或路由方法；不得各自 `AlipayMsgClient.getInstance(appId)`、`setMessageHandler` 或 `connect`。
+6. 主路由器的 `onMessage` 分发逻辑中，每个已声明的 `msgApi` / `msg_method` case 都必须实际调用对应的子域处理器方法；多个 case fallthrough 到同一个处理块可以共用一次调用。
+7. 主路由器必须传播子域 handler 的失败结果；不能只调用 `handler.handle(...)` 后忽略返回值。返回 `false`、`fail` 或抛异常时，应进入异常或失败路径；在官方 `MsgHandler.onMessage` 内，分发失败必须抛异常，让 SDK 返回失败 ACK 并保留平台重试语义。
+8. 未知 `msgApi` / `msg_method` 默认不得正常返回成功；必须抛异常、返回失败，或委托显式 unknown handler 并由该 handler 明确决定是否可确认消费。
+9. 首次 `connect()` 建连失败不得只记录日志后让应用继续处于可服务状态；必须选择 fail-fast 阻止启动，或同时具备后台重试和可观测的连接健康/就绪状态。SDK 已成功进入连接生命周期后的自动重连不能替代首次建连失败处理。
+
+## Spring 配置一致性
+
+1. 多域代码聚合到同一 Spring Boot 工程时，所有域的 `@Value` 占位符 key 必须与配置文件（`application.yml` / `application.properties`）中的 key 完全一致。`@Value` 的 `${}` 占位符不支持 relaxed binding，`app-id` 和 `appId` 不可互换。
+2. 新工程推荐配置 key 使用 kebab-case（如 `alipay.app-id`、`alipay.private-key`、`alipay.alipay-public-key`、`alipay.gateway-url`）；已有项目优先沿用既有配置命名风格，但同一语义的 key 不得混用多种写法。
+3. 主校验会扫描 `alipay.*` 前缀下的 `@Value` 引用，检测同一语义 key 的多写法混用以及 `@Value` 与配置文件不匹配。
+
+## 完成交付门禁
+
+1. 最终完成状态只以实际命令结果为准：SDK 预检、子域 validator、主聚合 validator 和可执行构建/测试。
+2. 不引入、读取或依赖 `.alipay-skill/codegen-status.json` 这类状态文件；模型不得用手写状态替代命令执行。
+3. 最终回复必须列出实际执行过的关键命令、退出码和最后几行输出，至少包含 SDK 预检、主聚合 validator，以及可执行的构建/测试命令；没有命令、退出码和输出摘录时不得说“完成”“通过”或“可交付”。
+4. 主聚合 validator 退出码为 `0` 且必要构建/测试通过时，才能宣布生成完成。
+5. 主聚合 validator 退出码为 `1` 时必须修复生成代码；退出码为 `2` 时必须修复门禁或做人工复核，不得宣布完成。
+6. 主聚合 validator、构建或测试任一失败时，最终状态必须写 `FAILED` 或“未完成”，不得写 `COMPLETED`、`生成完成`、`全部通过`、`可交付` 或同义结论。
+7. 子 Agent 的 `COMPLETED` 只表示本域回执完成，不等于全局交付完成。

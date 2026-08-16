@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "status": "CONFIRMED",
+  "businessScene": "差旅地铁",
+  "expenseType": "METRO",
+  "expenseTypeSubCategory": "METRO",
+  "sceneType": "TRAVEL",
+  "requiredRuleFactors": ["CARD_TYPE"],
+  "ruleFactorValues": {
+    "CARD_TYPE": []
+  },
+  "businessPriority": {
+    "enabled": false,
+    "merchantRestrictionFactors": []
+  }
+}
