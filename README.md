@@ -94,6 +94,19 @@ INSTALL_DIR=/path/to/skills ./install.sh
 
 > 附带补齐桌面端缺口：electron-desktop / tauri-desktop（上一轮缺口 #4 桌面应用）。
 
+### engineering（1728）— 游戏开发（2026-08-16 第六轮)
+
+游戏开发全流程——引擎（Godot/Unity/Unreal/Phaser/PixiJS/three.js/Bevy/LÖVE/Pygame/Roblox）、游戏类型、开发学科、工作室流程：
+
+| 来源 | 数量 | 覆盖 |
+|------|------|------|
+| [gamedev-skills/awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills)（520★） | 68 | **引擎**：godot 14（gdscript/3D/动画/物理/多人/着色器/tilemap）、unity 8（C#/输入/导航/UI）、unreal 6（蓝图/C++/行为树/Niagara）、phaser/pixijs/threejs、bevy-ecs/love2d/pygame/roblox；**学科 13**：game-ai/game-feel/物理调参/关卡设计/程序化生成/着色器/音效/UI/输入/存档；**类型 8**：rpg/fps/平台跳/解谜/roguelike/卡牌/塔防/生存/视觉小说；**工作流 3**：game-jam/prototype-fast/itch/steam 发布 |
+| [Donchitos/Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios)（23.9k★） | 73 | 游戏工作室全流程：setup-engine / vertical-slice / sprint-plan / sprint-status / milestone-review / release-checklist / launch-checklist / day-one-patch / playtest-report / team-qa / team-release / team-live-ops / team-combat / team-level / team-narrative / team-audio / balance-check / scope-check / gate-check / smoke-check / soak-test / regression-suite / patch-notes |
+| [Unity-Technologies/skills](https://github.com/Unity-Technologies/skills)（Unity 官方，254★） | 22 | new-unity-project / unity-cli / ui（uGUI/uITK/IMGUI）/ shader-graph / URP 后处理 / 物理碰撞 / 多人服务 / 语音 / IAP / 本地化 / 音频优化 / 精灵编辑器 |
+| [Besty0728/Unity-Skills](https://github.com/Besty0728/Unity-Skills)（1.6k★） | 75 | Unity 编辑器自动化全家桶：animator/cinemachine/light/material/shadergraph/terrain/profiler/netcode/scriptableobject/UI Toolkit/xr/urp/yooasset/hybridclr/dotween/unitask/addressables |
+| [alexmeckes/godot-claude-skills](https://github.com/alexmeckes/godot-claude-skills) | 5 | godot-scene-design / godot-live-edit / godot-interactive / godot-code-gen / godot-shader |
+| [DirtybitGames/unityctl](https://github.com/DirtybitGames/unityctl) | 4 | unity-editor 远程控制 / release / demo-page / plugins |
+
 ### marketing（21）— 营销与增长
 
 | Skill | 来源 |
@@ -158,6 +171,12 @@ The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录�
 - [Jeffallan/claude-skills](https://github.com/Jeffallan/claude-skills)（11k★）
 - [beriberikix/zephyr-agent-skills](https://github.com/beriberikix/zephyr-agent-skills)（Zephyr RTOS）
 - [rovinax/embedded-skills](https://github.com/rovinax/embedded-skills)
+- [gamedev-skills/awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills)（520★）
+- [Donchitos/Claude-Code-Game-Studios](https://github.com/Donchitos/Claude-Code-Game-Studios)（23.9k★）
+- [Unity-Technologies/skills](https://github.com/Unity-Technologies/skills)（Unity 官方）
+- [Besty0728/Unity-Skills](https://github.com/Besty0728/Unity-Skills)（1.6k★）
+- [alexmeckes/godot-claude-skills](https://github.com/alexmeckes/godot-claude-skills)
+- [DirtybitGames/unityctl](https://github.com/DirtybitGames/unityctl)
 - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)（24k★）
 - [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★）
 - [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review)
