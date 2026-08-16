@@ -119,6 +119,17 @@ INSTALL_DIR=/path/to/skills ./install.sh
 | [rrezartprebreza/spring-boot-skills](https://github.com/rrezartprebreza/spring-boot-skills)（215★） | 30 | spring-data-jpa / spring-security-jwt / webflux-reactive / spring-cloud-gateway / spring-batch / flyway-migrations / oauth2 / openapi-first / hexagonal / DDD / event-driven / multi-tenancy / MCP server / spring-ai |
 | [claudioed/claude-skills](https://github.com/claudioed/claude-skills) | 4 | java-dependency-auditor / java-mutation-test / java17-2-21-migration / spring-bootstrap-optimizer |
 
+### engineering（1842）— 设计文档规范 HLD/LLD（2026-08-16 第八轮）
+
+补齐技术设计文档写作规范（此前 0 专项）：
+
+| 来源 | 数量 | 覆盖 |
+|------|------|------|
+| [reddishz/designdoc](https://github.com/reddishz/designdoc) | 1 | **design-doc**：产品设计文档全层级 L0-L6（战略愿景/利益相关者需求/系统需求/概念架构/逻辑系统设计/详细设计/验证确认）+ 13 个模板 + 编码体系 + 审查指南 + 校验脚本 |
+| [caiaffa/claude-code-ultimate-engineering-system](https://github.com/caiaffa/claude-code-ultimate-engineering-system) | 7 | design-doc-writer（想法→决策就绪设计文档）/ adr-challenger / adr-reviewer / architecture-decisions / decision-quality-auditor / prd 系列 |
+| [ragrahari/claude-skills](https://github.com/ragrahari/claude-skills) | 1 | **system-design-doc**：需求→结构化系统设计文档（HLD），interview/production 双深度 |
+| [jgolbez/design-decision-extraction](https://github.com/jgolbez/design-decision-extraction) | 1 | extract-decisions：从设计文档提取结构化设计决策（备选/权衡/证据） |
+
 ### marketing（21）— 营销与增长
 
 | Skill | 来源 |
@@ -197,6 +208,10 @@ The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录�
 - [msrbuilds/animate-css-skill](https://github.com/msrbuilds/animate-css-skill)
 - [rrezartprebreza/spring-boot-skills](https://github.com/rrezartprebreza/spring-boot-skills)（215★）
 - [claudioed/claude-skills](https://github.com/claudioed/claude-skills)
+- [reddishz/designdoc](https://github.com/reddishz/designdoc)
+- [caiaffa/claude-code-ultimate-engineering-system](https://github.com/caiaffa/claude-code-ultimate-engineering-system)
+- [ragrahari/claude-skills](https://github.com/ragrahari/claude-skills)
+- [jgolbez/design-decision-extraction](https://github.com/jgolbez/design-decision-extraction)
 - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)（24k★）
 - [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★）
 - [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review)
