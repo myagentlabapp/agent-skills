@@ -107,6 +107,18 @@ INSTALL_DIR=/path/to/skills ./install.sh
 | [alexmeckes/godot-claude-skills](https://github.com/alexmeckes/godot-claude-skills) | 5 | godot-scene-design / godot-live-edit / godot-interactive / godot-code-gen / godot-shader |
 | [DirtybitGames/unityctl](https://github.com/DirtybitGames/unityctl) | 4 | unity-editor 远程控制 / release / demo-page / plugins |
 
+### engineering（1790）— 前端补强：Vue / Svelte / CSS / Java-Spring（2026-08-16 第七轮）
+
+补齐前端薄弱项（Vue/Svelte/CSS 专项）与 Java 后端（Spring Boot 系）：
+
+| 来源 | 数量 | 覆盖 |
+|------|------|------|
+| [vinayakkulkarni/vue-nuxt-best-practices](https://github.com/vinayakkulkarni/vue-nuxt-best-practices) + [alexanderop/claude-skill-vue-development](https://github.com/alexanderop/claude-skill-vue-development) | 6 | vue-best-practices / vue-development / nuxt-best-practices / nuxt-seo / nuxt-geo / nuxt-agent-ready |
+| [fubits1/svelte-skills](https://github.com/fubits1/svelte-skills) + [spences10/skills](https://github.com/spences10/skills) | 21 | svelte-code-style / svelte-composition / svelte-migration-svelte-5 / svelte-testing / svelte-storybook / svelte-vitest / svelte-playwright / svelte-runes / sveltekit-data-flow / sveltekit-structure 等 |
+| [PyModel/css-pro-tips](https://github.com/PyModel/css-pro-tips) + [msrbuilds/animate-css-skill](https://github.com/msrbuilds/animate-css-skill) | 4 | css-pro-tips（Baseline 现代 CSS）/ animate-css / css-nesting / css-subgrid / pixel-perfect / web-design-guidelines |
+| [rrezartprebreza/spring-boot-skills](https://github.com/rrezartprebreza/spring-boot-skills)（215★） | 30 | spring-data-jpa / spring-security-jwt / webflux-reactive / spring-cloud-gateway / spring-batch / flyway-migrations / oauth2 / openapi-first / hexagonal / DDD / event-driven / multi-tenancy / MCP server / spring-ai |
+| [claudioed/claude-skills](https://github.com/claudioed/claude-skills) | 4 | java-dependency-auditor / java-mutation-test / java17-2-21-migration / spring-bootstrap-optimizer |
+
 ### marketing（21）— 营销与增长
 
 | Skill | 来源 |
@@ -177,6 +189,14 @@ The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录�
 - [Besty0728/Unity-Skills](https://github.com/Besty0728/Unity-Skills)（1.6k★）
 - [alexmeckes/godot-claude-skills](https://github.com/alexmeckes/godot-claude-skills)
 - [DirtybitGames/unityctl](https://github.com/DirtybitGames/unityctl)
+- [vinayakkulkarni/vue-nuxt-best-practices](https://github.com/vinayakkulkarni/vue-nuxt-best-practices)
+- [alexanderop/claude-skill-vue-development](https://github.com/alexanderop/claude-skill-vue-development)
+- [fubits1/svelte-skills](https://github.com/fubits1/svelte-skills)
+- [spences10/skills](https://github.com/spences10/skills)
+- [PyModel/css-pro-tips](https://github.com/PyModel/css-pro-tips)
+- [msrbuilds/animate-css-skill](https://github.com/msrbuilds/animate-css-skill)
+- [rrezartprebreza/spring-boot-skills](https://github.com/rrezartprebreza/spring-boot-skills)（215★）
+- [claudioed/claude-skills](https://github.com/claudioed/claude-skills)
 - [alirezarezvani/claude-skills](https://github.com/alirezarezvani/claude-skills)（24k★）
 - [awesome-skills/code-review-skill](https://github.com/awesome-skills/code-review-skill)（1.7k★）
 - [tag1consulting/claude-comprehensive-review](https://github.com/tag1consulting/claude-comprehensive-review)
