@@ -1,0 +1,65 @@
+{
+  "meta": {
+    "title": "可選關聯範例:users ↔ teams",
+    "version": "0.1.0",
+    "locale": "zh-Hant",
+    "notes": "展示 0:1 與 0:N cardinality 對應可空 FK。對應 sources/team.sql。"
+  },
+  "constants": { "cardW": 214, "cardHApprox": 172 },
+
+  "layers": {
+    "org": {
+      "label": "組織",
+      "color": "#60a5fa",
+      "bg": "rgba(96,165,250,0.08)",
+      "border": "rgba(96,165,250,0.35)"
+    }
+  },
+
+  "tables": {
+    "users": {
+      "layer": "org",
+      "status": "existing",
+      "comment": "使用者;可選擇隸屬團隊",
+      "cols": [
+        { "name": "id",           "type": "BIGINT",       "tag": "PK", "nullable": false },
+        { "name": "email",        "type": "VARCHAR(255)", "tag": "UQ", "nullable": false },
+        { "name": "display_name", "type": "VARCHAR(255)", "nullable": false },
+        { "name": "team_id",      "type": "BIGINT",       "tag": "FK", "ref": "teams",
+          "nullable": true, "onDelete": "SET NULL", "note": "可空 → 連線標 0:N" },
+        { "name": "joined_at",    "type": "DATETIME",     "nullable": false, "default": "CURRENT_TIMESTAMP" }
+      ]
+    },
+
+    "teams": {
+      "layer": "org",
+      "status": "existing",
+      "comment": "團隊;lead 可不指定",
+      "cols": [
+        { "name": "id",           "type": "BIGINT",       "tag": "PK", "nullable": false },
+        { "name": "name",         "type": "VARCHAR(255)", "tag": "UQ", "nullable": false },
+        { "name": "lead_user_id", "type": "BIGINT",       "tag": "FK", "ref": "users",
+          "nullable": true, "onDelete": "SET NULL", "note": "可空 → 連線標 0:1" },
+        { "name": "created_at",   "type": "DATETIME",     "nullable": false, "default": "CURRENT_TIMESTAMP" }
+      ]
+    }
+  },
+
+  "diagrams": [
+    {
+      "id": "org",
+      "label": "組織關聯",
+      "canvas": { "w": 720, "h": 360 },
+      "positions": {
+        "teams": { "cx": 200, "cy": 180 },
+        "users": { "cx": 520, "cy": 180 }
+      },
+      "connections": [
+        { "from": "teams", "to": "users", "label": "team_id",      "cardinality": "0:N",
+          "isNew": false },
+        { "from": "users", "to": "teams", "label": "lead_user_id", "cardinality": "0:1",
+          "dashed": true, "isNew": false }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "meta": {
+    "title": "最小範例：兩表一線",
+    "version": "0.1.0",
+    "locale": "zh-Hant"
+  },
+  "constants": {
+    "cardW": 214,
+    "cardHApprox": 172
+  },
+  "layers": {
+    "core": {
+      "label": "核心",
+      "color": "#60a5fa",
+      "bg": "rgba(96,165,250,0.08)",
+      "border": "rgba(96,165,250,0.35)"
+    }
+  },
+  "tables": {
+    "accounts": {
+      "layer": "core",
+      "status": "existing",
+      "section": "demo",
+      "comment": "帳號主檔",
+      "cols": [
+        { "name": "id", "type": "BIGINT", "tag": "PK" },
+        { "name": "email", "type": "VARCHAR(255)", "tag": "UQ" }
+      ]
+    },
+    "sessions": {
+      "layer": "core",
+      "status": "new",
+      "section": "demo",
+      "comment": "登入工作階段",
+      "cols": [
+        { "name": "id", "type": "BIGINT", "tag": "PK" },
+        { "name": "account_id", "type": "BIGINT", "tag": "FK", "ref": "accounts" },
+        { "name": "expires_at", "type": "DATETIME" }
+      ]
+    }
+  },
+  "diagrams": [
+    {
+      "id": "demo",
+      "label": "Demo ER",
+      "canvas": { "w": 800, "h": 400 },
+      "positions": {
+        "accounts": { "cx": 200, "cy": 120 },
+        "sessions": { "cx": 520, "cy": 120 }
+      },
+      "connections": [
+        { "from": "accounts", "to": "sessions", "label": "account_id", "isNew": true }
+      ]
+    }
+  ]
+}

@@ -19,6 +19,7 @@ skills/
 ├── mlops/           # 机器学习与模型运维
 ├── creative/        # 创意设计（图表/ASCII/信息图/设计系统）
 ├── documentation/   # 文档规范（PRD/架构蓝图/Diátaxis/ADR）
+├── database-design/ # 数据库设计（Oracle/MSSQL/MySQL/MariaDB 多引擎 + ER 建模）
 ├── devops/          # DevOps 工程
 ├── github/          # GitHub 工作流
 ├── operations/      # 通用运维方法论
@@ -237,6 +238,10 @@ The Testing Academy（PramodDutta/qaskills，qaskills.sh）的 QA skill 目录�
 - [caiaffa/claude-code-ultimate-engineering-system](https://github.com/caiaffa/claude-code-ultimate-engineering-system)
 - [ragrahari/claude-skills](https://github.com/ragrahari/claude-skills)
 - [jgolbez/design-decision-extraction](https://github.com/jgolbez/design-decision-extraction)
+- [dbaoraclestar/dba-skills](https://github.com/dbaoraclestar/dba-skills)（Oracle/MSSQL/MySQL 三大引擎完整 DBA 设计体系）→ `database-design/db-*`
+- [MariaDB/skills](https://github.com/MariaDB/skills)（MariaDB 官方，8 技能）→ `database-design/mariadb-*`
+- [LoShinYen/agent_er_spec](https://github.com/LoShinYen/agent_er_spec)（SQL DDL→ER 建模专项）→ `database-design/er-bundle`
+- [Hainrixz/claude-db](https://github.com/Hainrixz/claude-db)（18★ 多范式 DB 专家，未合并因体积过大/与 db-* 重叠）
 - [Ronifue/skill-authoring](https://github.com/Ronifue/skill-authoring)
 - [agentskills/agentskills](https://github.com/agentskills/agentskills)（24.3k★ 官方规范）
 - [debs-obrien/learn-agent-skills](https://github.com/debs-obrien/learn-agent-skills)

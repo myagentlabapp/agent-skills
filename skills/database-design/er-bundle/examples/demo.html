@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>agent_er_spec — ER 範例頁</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<style>
+:root {
+  --bg:#0d1117; --surface:#161b22; --surface2:#21262d; --surface3:#2d333b;
+  --border:#30363d; --border2:#3d444d;
+  --text:#e6edf3; --text2:#adbac7; --text3:#768390;
+  --blue:#60a5fa; --mono:'JetBrains Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:100dvh;display:flex;flex-direction:column;overflow:hidden;}
+.hdr{padding:12px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface);flex-shrink:0;}
+.hdr-dot{width:9px;height:9px;border-radius:50%;background:var(--blue);box-shadow:0 0 10px var(--blue);}
+.hdr-title{font-size:14px;font-weight:600;}
+.hdr-sub{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.content{flex:1;overflow:hidden;position:relative;}
+.erd-wrap{width:100%;height:100%;overflow:auto;background:var(--bg);position:relative;}
+.erd-inner{position:relative;}
+.erd-svg{position:absolute;top:0;left:0;overflow:visible;pointer-events:none;}
+.tc{position:absolute;width:214px;cursor:grab;transition:box-shadow .12s;z-index:2;user-select:none;}
+.tc-box{border-radius:7px;border:1px solid;overflow:hidden;transition:box-shadow .18s;background:var(--surface2);}
+.tc:hover .tc-box{box-shadow:0 0 0 2px rgba(255,255,255,.12),0 6px 20px rgba(0,0,0,.55);}
+.erd-wrap.is-dragging{cursor:grabbing!important;}
+.erd-wrap.is-dragging .tc{cursor:grabbing!important;}
+.tc.is-dragging-card{box-shadow:0 0 0 2px var(--blue),0 12px 32px rgba(0,0,0,.7);z-index:20;transition:none!important;}
+.erd-reset-btn{position:fixed;top:72px;right:16px;z-index:25;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);font-size:11px;padding:5px 11px;border-radius:5px;cursor:pointer;font-family:var(--mono);}
+.erd-reset-btn:hover{background:var(--surface3);color:var(--text);}
+.erd-clear-btn{position:fixed;top:104px;right:16px;z-index:25;background:var(--surface2);border:1px solid var(--border2);color:var(--text3);font-size:10.5px;padding:4px 10px;border-radius:5px;cursor:pointer;font-family:var(--mono);}
+.erd-clear-btn:hover{background:var(--surface3);color:#f87171;border-color:rgba(248,113,113,.4);}
+.erd-zoom-host{position:relative;transform-origin:0 0;cursor:grab;}
+.erd-zoom-inner{position:relative;transform-origin:0 0;}
+.erd-wrap.is-panning{cursor:grabbing!important;user-select:none;}
+.erd-zoom-bar{position:fixed;bottom:16px;left:16px;z-index:25;display:flex;align-items:center;gap:2px;background:var(--surface2);border:1px solid var(--border2);border-radius:6px;padding:2px;font-family:var(--mono);font-size:11px;color:var(--text2);}
+.erd-zoom-bar button{background:transparent;border:none;color:var(--text2);cursor:pointer;width:28px;height:26px;border-radius:4px;font-size:14px;}
+.erd-zoom-bar button:hover{background:var(--surface3);color:var(--text);}
+.erd-zoom-pct{min-width:44px;text-align:center;font-size:10px;color:var(--text3);cursor:pointer;padding:0 4px;}
+.erd-zoom-tip{font-size:9px;color:var(--text3);margin-left:4px;padding-right:2px;white-space:nowrap;}
+.tc-head{padding:7px 10px 6px;display:flex;align-items:center;gap:6px;border-bottom:1px solid rgba(255,255,255,.06);}
+.tc-name{font-family:var(--mono);font-size:10.5px;font-weight:500;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tc-badge{font-size:8.5px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0;text-transform:uppercase;}
+.tc-badge.new{background:rgba(52,211,153,.2);color:#34d399;}
+.tc-badge.existing{background:rgba(139,148,158,.12);color:#8b949e;}
+.tc-badge.future{background:rgba(52,211,153,.1);color:#34d399;border:1px dashed rgba(52,211,153,.4);}
+.tc-cols{padding:3px 0;}
+.tc-col{display:flex;align-items:center;gap:4px;padding:2.5px 10px;font-size:9.5px;}
+.tc-tag{font-family:var(--mono);font-size:8.5px;font-weight:700;width:18px;flex-shrink:0;text-align:center;}
+.tag-PK{color:#fbbf24;} .tag-FK{color:#60a5fa;} .tag-UQ{color:#a78bfa;}
+.tc-col-name{font-family:var(--mono);color:var(--text2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tc-col-type{color:var(--text3);font-size:8.5px;flex-shrink:0;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.tc-more{padding:3px 10px 6px;font-size:9.5px;color:var(--text3);}
+.erd-legend{position:fixed;bottom:16px;right:16px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:10.5px;z-index:30;}
+.legend-row{display:flex;align-items:center;gap:7px;color:var(--text2);margin-bottom:4px;}
+.legend-dot{width:7px;height:7px;border-radius:50%;}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(3px);}
+.modal{background:var(--surface);border:1px solid var(--border2);border-radius:11px;width:min(560px,100%);max-height:82vh;overflow:hidden;display:flex;flex-direction:column;}
+.modal-head{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.modal-title{font-family:var(--mono);font-size:13px;font-weight:500;flex:1;}
+.modal-comment{font-size:11px;color:var(--text3);padding:8px 18px;background:rgba(0,0,0,.2);border-bottom:1px solid var(--border);}
+.modal-body{overflow-y:auto;}
+.modal-col{display:grid;grid-template-columns:20px 160px 120px 1fr;gap:8px;align-items:center;padding:7px 18px;border-bottom:1px solid rgba(48,54,61,.4);font-size:11.5px;}
+.modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:0 4px;}
+.modal-close:hover{color:var(--text);}
+.conn-tip{position:fixed;background:var(--surface2);border:1px solid var(--border2);border-radius:5px;padding:4px 9px;font-family:var(--mono);font-size:10.5px;color:var(--text2);pointer-events:none;z-index:50;white-space:nowrap;}
+</style>
+</head>
+<body>
+<!-- 與同目錄 minimal.erd.json 內容一致；單獨複製本目錄時仍可離線開啟 -->
+<script type="application/json" id="er-bundle-json">
+{
+  "meta": {
+    "title": "最小範例：兩表一線",
+    "version": "0.1.0",
+    "locale": "zh-Hant"
+  },
+  "constants": {
+    "cardW": 214,
+    "cardHApprox": 172
+  },
+  "layers": {
+    "core": {
+      "label": "核心",
+      "color": "#60a5fa",
+      "bg": "rgba(96,165,250,0.08)",
+      "border": "rgba(96,165,250,0.35)"
+    }
+  },
+  "tables": {
+    "accounts": {
+      "layer": "core",
+      "status": "existing",
+      "section": "demo",
+      "comment": "帳號主檔",
+      "cols": [
+        { "name": "id", "type": "BIGINT", "tag": "PK" },
+        { "name": "email", "type": "VARCHAR(255)", "tag": "UQ" }
+      ]
+    },
+    "sessions": {
+      "layer": "core",
+      "status": "new",
+      "section": "demo",
+      "comment": "登入工作階段",
+      "cols": [
+        { "name": "id", "type": "BIGINT", "tag": "PK" },
+        { "name": "account_id", "type": "BIGINT", "tag": "FK", "ref": "accounts" },
+        { "name": "expires_at", "type": "DATETIME" }
+      ]
+    }
+  },
+  "diagrams": [
+    {
+      "id": "demo",
+      "label": "Demo ER",
+      "canvas": { "w": 800, "h": 400 },
+      "positions": {
+        "accounts": { "cx": 200, "cy": 120 },
+        "sessions": { "cx": 520, "cy": 120 }
+      },
+      "connections": [
+        { "from": "accounts", "to": "sessions", "label": "account_id", "isNew": true }
+      ]
+    }
+  ]
+}
+</script>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useCallback, useRef, useEffect } = React;
+
+const BUNDLE = JSON.parse(document.getElementById('er-bundle-json').textContent);
+
+// ---------- Scoped, TTL'd localStorage helpers ----------
+// Storage key format: erd-pos:<bundle-title>:<diagId> or erd-zoom:<bundle-title>:<diagId>
+// Value format: {"v": <value>, "ts": <epoch_ms>}. Entries expire after 30 days.
+const ERD_STORAGE_TTL_MS = 30 * 24 * 60 * 60 * 1000;  // 30 days
+function erdStorageRead(key) {
+  try {
+    const s = localStorage.getItem(key);
+    if (!s) return null;
+    const parsed = JSON.parse(s);
+    if (!parsed || typeof parsed !== 'object' || !('ts' in parsed)) return null;
+    if (Date.now() - parsed.ts > ERD_STORAGE_TTL_MS) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return parsed.v;
+  } catch (e) { return null; }
+}
+function erdStorageWrite(key, value) {
+  try { localStorage.setItem(key, JSON.stringify({ v: value, ts: Date.now() })); } catch (e) {}
+}
+// Sweep on page load: delete expired entries, and any old-format
+// keys (`erd-pos-...` / `erd-zoom-...` without a colon — orphans from
+// a prior storage scheme that wasn't bundle-scoped).
+(function erdStorageSweep() {
+  try {
+    const toDelete = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (!k) continue;
+      const isLegacy = (k.startsWith('erd-pos-') || k.startsWith('erd-zoom-')) && !k.includes(':');
+      if (isLegacy) { toDelete.push(k); continue; }
+      if (k.startsWith('erd-pos:') || k.startsWith('erd-zoom:')) {
+        if (erdStorageRead(k) === null) toDelete.push(k);
+      }
+    }
+    toDelete.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    if (toDelete.length) console.info(`[er-bundle] swept ${toDelete.length} stale localStorage entries`);
+  } catch (e) {}
+})();
+function erdStorageClearAll() {
+  try {
+    const keys = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && (k.startsWith('erd-pos') || k.startsWith('erd-zoom'))) keys.push(k);
+    }
+    keys.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    return keys.length;
+  } catch (e) { return 0; }
+}
+const CARD_W = BUNDLE.constants?.cardW ?? 214;
+const CARD_H_APPROX = BUNDLE.constants?.cardHApprox ?? 172;
+const LAYERS = BUNDLE.layers;
+const TABLES = BUNDLE.tables;
+const DEMO_DIAGRAM = BUNDLE.diagrams[0];
+
+function ls(layer) {
+  const k = LAYERS[layer];
+  if (k) return k;
+  const first = Object.keys(LAYERS)[0];
+  return LAYERS[first];
+}
+
+// Approximate a card's actual rendered height from its column count, so cy
+// can be treated as the visual center (avoids the "arrow ends below the
+// card" bug when CARD_H_APPROX overestimates short tables).
+// CSS reference: header ~28px, cols container ~6px, each visible col ~17px,
+// "+N more" row ~18px. Visible cap is 6 cols.
+function approxCardHeight(name) {
+  const t = TABLES[name];
+  if (!t || !t.cols) return CARD_H_APPROX;
+  const visible = Math.min(t.cols.length, 6);
+  const more = t.cols.length > visible ? 1 : 0;
+  return 28 + 6 + visible * 17 + more * 18;
+}
+
+function getEndpoints(fromName, toName, fromPos, toPos, slotInfo) {
+  // Distribute multiple connections sharing the same edge: instead of all
+  // arriving at the edge midpoint, spread them across the central 60% of
+  // the edge based on their slot index among siblings.
+  const spread = (center, length, slot) => {
+    if (!slot || slot.total <= 1) return center;
+    const span = length * 0.6;
+    const step = span / (slot.total + 1);
+    return center - span / 2 + step * (slot.idx + 1);
+  };
+  const { cx: x1, cy: y1 } = fromPos, { cx: x2, cy: y2 } = toPos;
+  const dx = x2 - x1, dy = y2 - y1;
+  const hw = CARD_W / 2;
+  const fromH = approxCardHeight(fromName), toH = approxCardHeight(toName);
+  // Compute edge endpoints in data-direction terms: fp* on the from-card
+  // edge, tp* on the to-card edge.
+  let fpx, fpy, tpx, tpy;
+  if (Math.abs(dy) >= Math.abs(dx)) {
+    fpx = spread(x1, CARD_W, slotInfo && slotInfo.dep);
+    fpy = dy > 0 ? y1 + fromH / 2 : y1 - fromH / 2;
+    tpx = spread(x2, CARD_W, slotInfo && slotInfo.arr);
+    tpy = dy > 0 ? y2 - toH / 2 : y2 + toH / 2;
+  } else {
+    fpx = dx > 0 ? x1 + hw : x1 - hw;
+    fpy = spread(y1, fromH, slotInfo && slotInfo.dep);
+    tpx = dx > 0 ? x2 - hw : x2 + hw;
+    tpy = spread(y2, toH, slotInfo && slotInfo.arr);
+  }
+  // dbdiagram / UML convention: arrow tip at the PK side (= `from` in our
+  // bundle, since `to` is where the FK column lives). The SVG marker is
+  // attached at the path END, so we draw the path FK → PK: start at the
+  // to-card edge, end at the from-card edge.
+  return { sx: tpx, sy: tpy, ex: fpx, ey: fpy };
+}
+
+// For each connection compute its slot (idx within siblings + total count)
+// at both its departure and arrival edges. Self-refs are excluded (handled
+// separately by selfLoopPath).
+function computeEndpointSlots(connections, positions) {
+  const departures = {}, arrivals = {};
+  const sided = connections.map((c, i) => {
+    if (c.from === c.to) return null;
+    const fp = positions[c.from], tp = positions[c.to];
+    if (!fp || !tp) return null;
+    const dx = tp.cx - fp.cx, dy = tp.cy - fp.cy;
+    let depSide, arrSide;
+    if (Math.abs(dy) >= Math.abs(dx)) {
+      depSide = dy > 0 ? 'bottom' : 'top';
+      arrSide = dy > 0 ? 'top' : 'bottom';
+    } else {
+      depSide = dx > 0 ? 'right' : 'left';
+      arrSide = dx > 0 ? 'left' : 'right';
+    }
+    return { i, depKey: `${c.from}:${depSide}`, arrKey: `${c.to}:${arrSide}` };
+  });
+  sided.forEach(s => {
+    if (!s) return;
+    (departures[s.depKey] = departures[s.depKey] || []).push(s.i);
+    (arrivals[s.arrKey] = arrivals[s.arrKey] || []).push(s.i);
+  });
+  const slots = new Array(connections.length).fill(null);
+  sided.forEach(s => {
+    if (!s) return;
+    slots[s.i] = {
+      dep: { idx: departures[s.depKey].indexOf(s.i), total: departures[s.depKey].length },
+      arr: { idx: arrivals[s.arrKey].indexOf(s.i), total: arrivals[s.arrKey].length },
+    };
+  });
+  return slots;
+}
+
+function connPath(sx, sy, ex, ey) {
+  const dx = ex - sx, dy = ey - sy;
+  if (Math.abs(dy) >= Math.abs(dx)) {
+    const my = (sy + ey) / 2;
+    return `M${sx},${sy} C${sx},${my} ${ex},${my} ${ex},${ey}`;
+  }
+  const mx = (sx + ex) / 2;
+  return `M${sx},${sy} C${mx},${sy} ${mx},${ey} ${ex},${ey}`;
+}
+
+function TableCard({ name, pos, onPointerDown, draggingName, padX = 20, padY = 20 }) {
+  const tbl = TABLES[name];
+  if (!tbl || !pos) return null;
+  const layer = ls(tbl.layer);
+  const visible = tbl.cols.slice(0, 6);
+  const more = tbl.cols.length - visible.length;
+  const left = pos.cx - CARD_W / 2 + padX;
+  const top = pos.cy - approxCardHeight(name) / 2 + padY;
+  const dragging = draggingName === name;
+  return (
+    <div className={`tc${dragging ? ' is-dragging-card' : ''}`}
+      style={{ left, top }}
+      onPointerDown={e => onPointerDown(name, e)}>
+      <div className="tc-box" style={{ borderColor: layer.border }}>
+        <div className="tc-head">
+          <span className="tc-name" style={{ color: layer.color }} title={name}>{name}</span>
+          <span className={`tc-badge ${tbl.status}`}>{tbl.status === 'new' ? 'NEW' : tbl.status === 'future' ? '未來' : '既有'}</span>
+        </div>
+        <div className="tc-cols">
+          {visible.map(c => (
+            <div className="tc-col" key={c.name}>
+              <span className={`tc-tag tag-${c.tag || ''}`}>{c.tag || ''}</span>
+              <span className="tc-col-name" title={c.name}>{c.name}</span>
+              <span className="tc-col-type">{c.type.replace('VARCHAR', 'VC').replace('TINYINT', 'TIN')}</span>
+            </div>
+          ))}
+        </div>
+        {more > 0 && <div className="tc-more">+{more} 更多…</div>}
+      </div>
+    </div>
+  );
+}
+
+const ERD_ZOOM_MIN = 0.35;
+const ERD_ZOOM_MAX = 2.8;
+
+function ERDiagram({ diagId, positions: initPos, connections, canvas, onSelect }) {
+  // Scope localStorage by bundle title to avoid cross-bundle collisions
+  // when many bundles use the same diagram id (e.g. "full").
+  const bundleScope = encodeURIComponent((BUNDLE.meta && BUNDLE.meta.title) || 'untitled');
+  const storageKey = `erd-pos:${bundleScope}:${diagId}`;
+  const zoomKey = `erd-zoom:${bundleScope}:${diagId}`;
+  const [positions, setPositions] = useState(() => {
+    const stored = erdStorageRead(storageKey);
+    return stored ? { ...initPos, ...stored } : initPos;
+  });
+  const [zoom, setZoom] = useState(() => {
+    const z = erdStorageRead(zoomKey);
+    if (Number.isFinite(z) && z >= ERD_ZOOM_MIN && z <= ERD_ZOOM_MAX) return z;
+    return 1;
+  });
+  const [draggingName, setDraggingName] = useState(null);
+  const [tip, setTip] = useState(null);
+  const wrapRef = useRef(null);
+  const dragRef = useRef(null);
+  const panRef = useRef(null);
+  const selectRef = useRef(onSelect);
+  useEffect(() => { selectRef.current = onSelect; });
+
+  useEffect(() => {
+    erdStorageWrite(zoomKey, zoom);
+  }, [zoom, zoomKey]);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const onWheel = (e) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 0.9 : 1.11;
+      setZoom(z => Math.min(ERD_ZOOM_MAX, Math.max(ERD_ZOOM_MIN, z * factor)));
+    };
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
+
+  useEffect(() => {
+    const onMove = (e) => {
+      const d = dragRef.current;
+      if (d) {
+        const sc = d.scale || 1;
+        const rawDx = e.clientX - d.startMX, rawDy = e.clientY - d.startMY;
+        if (!d.moved && (Math.abs(rawDx) > 4 || Math.abs(rawDy) > 4)) {
+          d.moved = true;
+          wrapRef.current?.classList.add('is-dragging');
+        }
+        if (!d.moved) return;
+        const dx = rawDx / sc, dy = rawDy / sc;
+        setPositions(prev => ({
+          ...prev,
+          [d.name]: {
+            cx: Math.max(CARD_W / 2 + 10, d.startCX + dx),
+            cy: Math.max(CARD_H_APPROX / 2 + 10, d.startCY + dy),
+          },
+        }));
+        return;
+      }
+      const p = panRef.current;
+      if (!p) return;
+      const rawDx = e.clientX - p.startMX, rawDy = e.clientY - p.startMY;
+      if (!p.moved && (Math.abs(rawDx) > 4 || Math.abs(rawDy) > 4)) {
+        p.moved = true;
+        wrapRef.current?.classList.add('is-panning');
+      }
+      if (!p.moved) return;
+      const w = wrapRef.current;
+      if (!w) return;
+      w.scrollLeft = p.startSL - (e.clientX - p.startMX);
+      w.scrollTop = p.startST - (e.clientY - p.startMY);
+    };
+    const onUp = () => {
+      const d = dragRef.current;
+      if (d) {
+        dragRef.current = null;
+        setDraggingName(null);
+        wrapRef.current?.classList.remove('is-dragging');
+        if (!d.moved) {
+          selectRef.current(d.name);
+        } else {
+          setPositions(prev => {
+            erdStorageWrite(storageKey, prev);
+            return prev;
+          });
+        }
+        return;
+      }
+      if (panRef.current) {
+        panRef.current = null;
+        wrapRef.current?.classList.remove('is-panning');
+      }
+    };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+    };
+  }, [storageKey]);
+
+  const onBackgroundPointerDown = useCallback((e) => {
+    if (e.button !== 0) return;
+    if (e.target.closest && e.target.closest('.tc')) return;
+    e.preventDefault();
+    const w = wrapRef.current;
+    if (!w) return;
+    panRef.current = {
+      startMX: e.clientX, startMY: e.clientY,
+      startSL: w.scrollLeft, startST: w.scrollTop,
+      moved: false,
+    };
+  }, []);
+
+  const onPointerDown = useCallback((name, e) => {
+    e.preventDefault();
+    panRef.current = null;
+    setDraggingName(name);
+    dragRef.current = {
+      name,
+      startMX: e.clientX, startMY: e.clientY,
+      startCX: positions[name].cx, startCY: positions[name].cy,
+      moved: false,
+      scale: zoom,
+    };
+  }, [positions, zoom]);
+
+  const reset = () => {
+    try { localStorage.removeItem(storageKey); } catch (e) {}
+    setPositions(initPos);
+  };
+
+  const padX = 20, padY = 20;
+  const allVals = Object.values(positions);
+  const dynW = Math.max(canvas.w, ...allVals.map(p => p.cx + CARD_W / 2 + 60));
+  const dynH = Math.max(canvas.h, ...allVals.map(p => p.cy + CARD_H_APPROX / 2 + 60));
+  const svgW = dynW + padX * 2, svgH = dynH + padY * 2;
+
+  const layerColKey = (l) =>
+    l === 'identity' ? 'blue' : l === 'compliance' ? 'amber' : l === 'contract' ? 'orange'
+      : l === 'approval' ? 'pink' : l === 'product' ? 'green' : l === 'audit' ? 'purple' : 'gray';
+
+  // Self-reference loop: both endpoints on the RIGHT edge of the card,
+  // tip at the upper end (PK side) — consistent with the global
+  // dbdiagram / UML convention that all arrows point from FK to PK.
+  const selfLoopPath = (pos, name) => {
+    const cx = pos.cx + padX, cy = pos.cy + padY;
+    const hw = CARD_W / 2, hh = approxCardHeight(name) / 2;
+    const x = cx + hw;
+    const sy = cy + hh * 0.35;        // lower right (tail = FK side)
+    const ey = cy - hh * 0.35;        // upper right (tip = PK side)
+    const outX = x + 55;
+    return `M${x},${sy} C${outX},${sy} ${outX},${ey} ${x},${ey}`;
+  };
+
+  const slots = computeEndpointSlots(connections, positions);
+  const paths = connections.map((c, i) => {
+    const fp = positions[c.from], tp = positions[c.to];
+    if (!fp || !tp) return null;
+    const fromLayer = TABLES[c.from]?.layer || Object.keys(LAYERS)[0];
+    const color = c.isNew ? ls(fromLayer).color : 'rgba(255,255,255,.82)';
+    const d = (c.from === c.to)
+      ? selfLoopPath(fp, c.from)
+      : (() => {
+          const { sx, sy, ex, ey } = getEndpoints(c.from, c.to, fp, tp, slots[i]);
+          return connPath(sx + padX, sy + padY, ex + padX, ey + padY);
+        })();
+    return { ...c, d, color, i, fromLayer, strokeW: c.isNew ? 1.5 : 1, opacity: c.isNew ? 0.85 : 0.72, dash: c.dashed ? '5,4' : 'none' };
+  }).filter(Boolean);
+
+  const COLS = { blue:'#60a5fa', amber:'#fbbf24', orange:'#fb923c', pink:'#f472b6', green:'#34d399', purple:'#a78bfa', gray:'rgba(139,148,158,.85)', existing:'rgba(255,255,255,.9)' };
+
+  const zoomOut = () => setZoom(z => Math.max(ERD_ZOOM_MIN, z / 1.18));
+  const zoomIn = () => setZoom(z => Math.min(ERD_ZOOM_MAX, z * 1.18));
+  const zoomPct = Math.round(zoom * 100);
+
+  return (
+    <div className="erd-wrap" ref={wrapRef}>
+      <div className="erd-zoom-host" style={{ width: svgW * zoom, height: svgH * zoom }} onPointerDown={onBackgroundPointerDown}>
+        <div className="erd-zoom-inner erd-inner" style={{ width: svgW, height: svgH, transform: `scale(${zoom})` }}>
+          <svg className="erd-svg" width={svgW} height={svgH}>
+            <defs>
+              {Object.entries(COLS).map(([k, fill]) => (
+                <marker key={k} id={`${diagId}-${k}`} markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
+                  <path d="M0,0 L0,10 L10,5 z" fill={fill} opacity=".9"/>
+                </marker>
+              ))}
+            </defs>
+            {paths.map(p => (
+              <path key={p.i} d={p.d}
+                stroke={p.color} strokeWidth={p.strokeW} fill="none"
+                opacity={p.opacity} strokeDasharray={p.dash}
+                markerEnd={`url(#${diagId}-${p.isNew ? layerColKey(p.fromLayer) : 'existing'})`}
+                onMouseEnter={e => setTip({ label: p.label, x: e.clientX, y: e.clientY })}
+                onMouseLeave={() => setTip(null)}
+              />
+            ))}
+          </svg>
+          {Object.keys(positions).map(name =>
+            <TableCard key={name} name={name} pos={positions[name]}
+              onPointerDown={onPointerDown} draggingName={draggingName}
+              padX={padX} padY={padY} />
+          )}
+        </div>
+      </div>
+      <div className="erd-zoom-bar" aria-label="ER 圖縮放">
+        <button type="button" onClick={zoomOut}>−</button>
+        <span className="erd-zoom-pct" onClick={() => setZoom(1)}>{zoomPct}%</span>
+        <button type="button" onClick={zoomIn}>+</button>
+        <span className="erd-zoom-tip">Ctrl/⌘+滾輪 · 空白拖曳平移</span>
+      </div>
+      <button type="button" className="erd-reset-btn" onClick={reset}>↺ 重設版面</button>
+      <button type="button" className="erd-clear-btn" title="Clear all stored ER positions across all bundles" onClick={() => {
+        if (!confirm('清掉所有 ER 圖的座標與縮放記憶?(所有 bundle,不只目前這份)')) return;
+        const n = erdStorageClearAll();
+        alert(`已清除 ${n} 個 localStorage entry`);
+        location.reload();
+      }}>🗑 清全部</button>
+      {tip && <div className="conn-tip" style={{ left: tip.x + 12, top: tip.y - 12 }}>{tip.label}</div>}
+    </div>
+  );
+}
+
+function Legend() {
+  return (
+    <div className="erd-legend">
+      {Object.keys(LAYERS).map(k => (
+        <div key={k} className="legend-row">
+          <div className="legend-dot" style={{ background: LAYERS[k].color }}></div>
+          <span>{LAYERS[k].label}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TableModal({ name, onClose }) {
+  const tbl = TABLES[name];
+  if (!tbl) return null;
+  const layer = ls(tbl.layer);
+  return (
+    <div className="modal-bg" onClick={onClose}>
+      <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-head">
+          <span className={`tc-badge ${tbl.status}`} style={{ marginRight: 4 }}>
+            {tbl.status === 'new' ? 'NEW' : tbl.status === 'future' ? '未來' : '既有'}
+          </span>
+          <span className="modal-title" style={{ color: layer.color }}>{name}</span>
+          <span style={{ fontSize: 10.5, color: 'var(--text3)', fontFamily: 'var(--mono)' }}>{tbl.section}</span>
+          <button type="button" className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-comment">{tbl.comment}</div>
+        <div className="modal-body">
+          <div className="modal-col" style={{ background: 'rgba(0,0,0,.2)', color: 'var(--text3)', fontSize: 10 }}>
+            <span></span><span>欄位</span><span>型別</span><span>說明</span>
+          </div>
+          {tbl.cols.map(c => (
+            <div key={c.name} className="modal-col">
+              <span className={`tc-tag tag-${c.tag || ''}`}>{c.tag || ''}</span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 12, color: 'var(--text2)' }}>{c.name}</span>
+              <span style={{ fontFamily: 'var(--mono)', fontSize: 11, color: 'var(--text3)' }}>{c.type}</span>
+              <span style={{ fontSize: 11, color: 'var(--text3)' }}>{c.note || (c.ref ? `FK → ${c.ref}` : '')}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [selected, setSelected] = useState(null);
+  const meta = BUNDLE.meta || {};
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100dvh' }}>
+      <header className="hdr">
+        <div className="hdr-dot" aria-hidden="true"></div>
+        <div>
+          <div className="hdr-title">{meta.title || 'ER Demo'}</div>
+          <div className="hdr-sub">agent_er_spec · bundle v{meta.version || '—'} · 點表卡（不拖曳）開欄位</div>
+        </div>
+      </header>
+      <main className="content">
+        <ERDiagram
+          diagId={DEMO_DIAGRAM.id}
+          positions={DEMO_DIAGRAM.positions}
+          connections={DEMO_DIAGRAM.connections}
+          canvas={DEMO_DIAGRAM.canvas}
+          onSelect={setSelected}
+        />
+        <Legend />
+      </main>
+      {selected && <TableModal name={selected} onClose={() => setSelected(null)} />}
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

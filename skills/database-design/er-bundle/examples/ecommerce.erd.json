@@ -1,0 +1,230 @@
+{
+  "meta": {
+    "title": "電商核心:下單到出貨",
+    "version": "0.1.0",
+    "locale": "zh-Hant",
+    "notes": "對應 sources/ecommerce.sql。展示複合鍵、cardinality、FK 行為、dataFlows、designDecisions。"
+  },
+  "constants": { "cardW": 214, "cardHApprox": 172 },
+
+  "layers": {
+    "identity": {
+      "label": "身分",
+      "color": "#60a5fa",
+      "bg": "rgba(96,165,250,0.08)",
+      "border": "rgba(96,165,250,0.35)"
+    },
+    "catalog": {
+      "label": "商品目錄",
+      "color": "#a78bfa",
+      "bg": "rgba(167,139,250,0.08)",
+      "border": "rgba(167,139,250,0.35)"
+    },
+    "ordering": {
+      "label": "下單",
+      "color": "#34d399",
+      "bg": "rgba(52,211,153,0.08)",
+      "border": "rgba(52,211,153,0.35)"
+    },
+    "fulfillment": {
+      "label": "出貨",
+      "color": "#fbbf24",
+      "bg": "rgba(251,191,36,0.08)",
+      "border": "rgba(251,191,36,0.35)"
+    }
+  },
+
+  "tables": {
+    "accounts": {
+      "layer": "identity",
+      "status": "existing",
+      "comment": "帳號主檔",
+      "cols": [
+        { "name": "id",         "type": "BIGINT",       "tag": "PK", "nullable": false },
+        { "name": "email",      "type": "VARCHAR(255)", "tag": "UQ", "nullable": false },
+        { "name": "status",     "type": "VARCHAR(16)",  "nullable": false, "default": "'active'",
+          "enumValues": ["active", "suspended", "deleted"] },
+        { "name": "created_at", "type": "DATETIME",     "nullable": false, "default": "CURRENT_TIMESTAMP" }
+      ]
+    },
+
+    "products": {
+      "layer": "catalog",
+      "status": "existing",
+      "comment": "商品主檔",
+      "cols": [
+        { "name": "id",          "type": "BIGINT",       "tag": "PK", "nullable": false },
+        { "name": "sku",         "type": "VARCHAR(64)",  "tag": "UQ", "nullable": false },
+        { "name": "name",        "type": "VARCHAR(255)", "nullable": false },
+        { "name": "price_cents", "type": "INT",          "nullable": false, "note": "單位:分" }
+      ],
+      "tableConstraints": [
+        { "type": "CHECK", "cols": ["price_cents"], "expression": "price_cents >= 0" }
+      ]
+    },
+
+    "carts": {
+      "layer": "ordering",
+      "status": "existing",
+      "cols": [
+        { "name": "id",         "type": "BIGINT",   "tag": "PK", "nullable": false },
+        { "name": "account_id", "type": "BIGINT",   "tag": "FK", "ref": "accounts",
+          "nullable": false, "onDelete": "CASCADE" },
+        { "name": "created_at", "type": "DATETIME", "nullable": false, "default": "CURRENT_TIMESTAMP" }
+      ]
+    },
+
+    "cart_items": {
+      "layer": "ordering",
+      "status": "existing",
+      "comment": "購物車明細;複合 PK = (cart_id, product_id)",
+      "cols": [
+        { "name": "cart_id",    "type": "BIGINT", "tag": "FK", "ref": "carts",
+          "nullable": false, "onDelete": "CASCADE" },
+        { "name": "product_id", "type": "BIGINT", "tag": "FK", "ref": "products",
+          "nullable": false, "onDelete": "RESTRICT" },
+        { "name": "qty",        "type": "INT",    "nullable": false, "default": "1" }
+      ],
+      "tableConstraints": [
+        { "type": "PK", "cols": ["cart_id", "product_id"] }
+      ]
+    },
+
+    "orders": {
+      "layer": "ordering",
+      "status": "new",
+      "comment": "訂單主檔",
+      "cols": [
+        { "name": "id",          "type": "BIGINT",      "tag": "PK", "nullable": false },
+        { "name": "account_id",  "type": "BIGINT",      "tag": "FK", "ref": "accounts",
+          "nullable": false, "onDelete": "RESTRICT" },
+        { "name": "status",      "type": "VARCHAR(16)", "nullable": false, "default": "'pending'",
+          "enumValues": ["pending", "paid", "shipped", "cancelled"] },
+        { "name": "total_cents", "type": "INT",         "nullable": false },
+        { "name": "placed_at",   "type": "DATETIME",    "nullable": false, "default": "CURRENT_TIMESTAMP" }
+      ],
+      "tableConstraints": [
+        { "type": "INDEX", "cols": ["account_id", "placed_at"], "name": "idx_orders_account_placed" }
+      ]
+    },
+
+    "order_items": {
+      "layer": "ordering",
+      "status": "new",
+      "comment": "訂單明細;unit_cents 為下單當下快照",
+      "cols": [
+        { "name": "order_id",   "type": "BIGINT", "tag": "FK", "ref": "orders",
+          "nullable": false, "onDelete": "CASCADE" },
+        { "name": "product_id", "type": "BIGINT", "tag": "FK", "ref": "products",
+          "nullable": false, "onDelete": "RESTRICT" },
+        { "name": "qty",        "type": "INT",    "nullable": false },
+        { "name": "unit_cents", "type": "INT",    "nullable": false, "note": "快照欄,見 designDecisions" }
+      ],
+      "tableConstraints": [
+        { "type": "PK", "cols": ["order_id", "product_id"] }
+      ]
+    },
+
+    "shipments": {
+      "layer": "fulfillment",
+      "status": "future",
+      "comment": "出貨單;與 orders 1:1",
+      "cols": [
+        { "name": "id",          "type": "BIGINT",      "tag": "PK", "nullable": false },
+        { "name": "order_id",    "type": "BIGINT",      "tag": "FK", "ref": "orders",
+          "nullable": false, "onDelete": "CASCADE",
+          "note": "UNIQUE 反映 1:1;見 tableConstraints" },
+        { "name": "carrier",     "type": "VARCHAR(32)", "nullable": false },
+        { "name": "tracking_no", "type": "VARCHAR(64)", "nullable": true },
+        { "name": "shipped_at",  "type": "DATETIME",    "nullable": true }
+      ],
+      "tableConstraints": [
+        { "type": "UQ", "cols": ["order_id"] }
+      ]
+    }
+  },
+
+  "diagrams": [
+    {
+      "id": "full",
+      "label": "全圖",
+      "canvas": { "w": 1100, "h": 560 },
+      "positions": {
+        "accounts":    { "cx": 140, "cy": 140 },
+        "products":    { "cx": 140, "cy": 420 },
+        "carts":       { "cx": 420, "cy": 140 },
+        "cart_items":  { "cx": 420, "cy": 420 },
+        "orders":      { "cx": 720, "cy": 140 },
+        "order_items": { "cx": 720, "cy": 420 },
+        "shipments":   { "cx": 980, "cy": 140 }
+      },
+      "connections": [
+        { "from": "accounts", "to": "carts",       "label": "account_id", "cardinality": "1:N" },
+        { "from": "accounts", "to": "orders",      "label": "account_id", "cardinality": "1:N", "isNew": true },
+        { "from": "carts",    "to": "cart_items",  "label": "cart_id",    "cardinality": "1:N" },
+        { "from": "products", "to": "cart_items",  "label": "product_id", "cardinality": "1:N" },
+        { "from": "orders",   "to": "order_items", "label": "order_id",   "cardinality": "1:N", "isNew": true },
+        { "from": "products", "to": "order_items", "label": "product_id", "cardinality": "1:N", "isNew": true },
+        { "from": "orders",   "to": "shipments",   "label": "order_id",   "cardinality": "1:1", "isNew": true }
+      ]
+    },
+    {
+      "id": "ordering-only",
+      "label": "下單子網域",
+      "canvas": { "w": 820, "h": 420 },
+      "positions": {
+        "accounts":    { "cx": 140, "cy": 120 },
+        "orders":      { "cx": 420, "cy": 120 },
+        "order_items": { "cx": 420, "cy": 300 },
+        "products":    { "cx": 700, "cy": 300 }
+      },
+      "connections": [
+        { "from": "accounts", "to": "orders",      "label": "account_id", "cardinality": "1:N" },
+        { "from": "orders",   "to": "order_items", "label": "order_id",   "cardinality": "1:N" },
+        { "from": "products", "to": "order_items", "label": "product_id", "cardinality": "1:N" }
+      ]
+    }
+  ],
+
+  "dataFlows": [
+    {
+      "id": "checkout",
+      "title": "結帳:cart → order",
+      "tag": "Write",
+      "tagColor": "#34d399",
+      "steps": [
+        { "actor": "User",    "action": "點選結帳" },
+        { "actor": "API",     "action": "讀取 carts + cart_items,計算 total_cents" },
+        { "actor": "API",     "action": "建立 orders(status='pending') 與 order_items(unit_cents 快照自 products.price_cents)" },
+        { "actor": "API",     "action": "刪除 carts + cart_items(ON DELETE CASCADE)" },
+        { "actor": "Payment", "action": "付款成功後 orders.status → 'paid'" }
+      ],
+      "writes": ["orders", "order_items", "carts", "cart_items"]
+    },
+    {
+      "id": "ship",
+      "title": "出貨:order → shipment",
+      "tag": "Write",
+      "tagColor": "#fbbf24",
+      "steps": [
+        { "actor": "Ops", "action": "在後台建立 shipments(carrier、tracking_no)" },
+        { "actor": "API", "action": "orders.status → 'shipped'(觸發器或應用層)" }
+      ],
+      "writes": ["shipments", "orders"]
+    }
+  ],
+
+  "designDecisions": [
+    {
+      "title": "訂單金額快照",
+      "highlight": true,
+      "old": "order_items 只存 product_id 與 qty,顯示時 join products 取現價 → 商品改價後歷史單金額會改變,對帳出錯。",
+      "v3": "order_items 新增 unit_cents,下單瞬間快照寫入。products 之後改價不影響歷史訂單;對帳穩定。"
+    },
+    {
+      "title": "FK 級聯策略",
+      "old": "全部 ON DELETE CASCADE,刪 accounts 連帶清掉 orders → 違反金流稽核要求。",
+      "v3": "accounts→orders 與 *→products 改 RESTRICT,需先處理依賴才能刪;carts、cart_items、shipments 維持 CASCADE。"
+    }
+  ]
+}
